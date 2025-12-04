@@ -12,6 +12,7 @@ require_once __DIR__ . '/core/Functions.php';
 
 $page = $_GET['page'] ?? 'home';
 $action = $_GET['action'] ?? 'index';
+$isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST';
 
 $page = preg_replace('/[^a-zA-Z0-9_-]/', '', $page);
 $action = preg_replace('/[^a-zA-Z0-9_-]/', '', $action);
@@ -31,15 +32,34 @@ try {
             break;
             
         case 'auth':
+            if ($isPostRequest) {
+                require_once __DIR__ . '/controllers/AuthController.php';
+                $authController = new AuthController();
+
+                if ($action === 'login') {
+                    $authController->login();
+                } elseif ($action === 'register') {
+                    $authController->register();
+                }
+                exit;
+            }
+
             if ($action === 'login') {
+                if (isLoggedIn()) {
+                    redirect('index.php?page=home');
+                }
                 $pageTitle = 'Login - myUnila Lost & Found';
                 require_once __DIR__ . '/views/auth/login.php';
             } elseif ($action === 'register') {
+                if (isLoggedIn()) {
+                    redirect('index.php?page=home');
+                }
                 $pageTitle = 'Daftar - myUnila Lost & Found';
                 require_once __DIR__ . '/views/auth/register.php';
             } elseif ($action === 'logout') {
-                session_destroy();
-                redirect('index.php?page=home');
+                require_once __DIR__ . '/controllers/AuthController.php';
+                $authController = new AuthController();
+                $authController->logout();
             } else {
                 throw new Exception('Action not found');
             }
