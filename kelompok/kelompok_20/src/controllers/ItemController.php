@@ -8,6 +8,7 @@ final class ItemController
 {
     private Item $itemModel;
     private string $uploadDir;
+    private int $itemsPerPage = 12;
 
     public function __construct()
     {
@@ -17,6 +18,7 @@ final class ItemController
 
     public function index(): void
     {
+        // Base filters
         $filters = [
             'type'        => clean($_GET['type'] ?? ''),
             'category_id' => !empty($_GET['category']) ? (int) $_GET['category'] : null,
@@ -25,15 +27,108 @@ final class ItemController
             'status'      => clean($_GET['status'] ?? '')
         ];
 
-        $filters = array_filter($filters);
+        // Advanced filters: Date Range
+        if (!empty($_GET['start_date'])) {
+            $filters['start_date'] = clean($_GET['start_date']);
+        }
+        if (!empty($_GET['end_date'])) {
+            $filters['end_date'] = clean($_GET['end_date']);
+        }
 
+        // Sorting
+        $sort = clean($_GET['sort'] ?? 'newest');
+        if (!in_array($sort, ['newest', 'oldest'], true)) {
+            $sort = 'newest';
+        }
+        $filters['sort'] = $sort;
+
+        // Remove empty values for clean query building
+        $filters = array_filter($filters, fn($v) => $v !== null && $v !== '');
+
+        // Pagination: Get total count first
+        $totalItems = $this->itemModel->countAllFiltered($filters);
+        $totalPages = (int) ceil($totalItems / $this->itemsPerPage);
+
+        // Current page
+        $currentPage = (int) ($_GET['page'] ?? 1);
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+        if ($totalPages > 0 && $currentPage > $totalPages) {
+            $currentPage = $totalPages;
+        }
+
+        // Calculate offset
+        $offset = ($currentPage - 1) * $this->itemsPerPage;
+
+        // Apply pagination to filters
+        $filters['limit'] = $this->itemsPerPage;
+        $filters['offset'] = $offset;
+
+        // Fetch items with all filters applied
         $items = $this->itemModel->getAll($filters);
         $categories = $this->itemModel->getCategories();
         $locations = $this->itemModel->getLocations();
 
+        // Pagination data for view
+        $pagination = [
+            'current_page' => $currentPage,
+            'total_pages'  => $totalPages,
+            'total_items'  => $totalItems,
+            'per_page'     => $this->itemsPerPage,
+            'has_prev'     => $currentPage > 1,
+            'has_next'     => $currentPage < $totalPages
+        ];
+
         $pageTitle = 'Daftar Barang - myUnila Lost & Found';
 
         require_once __DIR__ . '/../views/items/index.php';
+    }
+
+    /**
+     * Smart Match: Find potential matching items for a given item
+     * 
+     * If viewing a "lost" item → show "found" items with same category
+     * If viewing a "found" item → show "lost" items with same category
+     */
+    public function matches(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            flash('message', 'Item tidak valid.', 'error');
+            redirect('index.php?page=items');
+            return;
+        }
+
+        // Fetch the target item
+        $item = $this->itemModel->getById($id);
+
+        if (!$item) {
+            flash('message', 'Item tidak ditemukan.', 'error');
+            redirect('index.php?page=items');
+            return;
+        }
+
+        // Get limit from query param (default 5, max 20)
+        $limit = (int) ($_GET['limit'] ?? 5);
+        if ($limit < 1) $limit = 5;
+        if ($limit > 20) $limit = 20;
+
+        // Find potential matches
+        $matches = $this->itemModel->findMatches($item, $limit);
+
+        // Prepare data for view/API response
+        $matchData = [
+            'target_item'   => $item,
+            'matches'       => $matches,
+            'matches_count' => count($matches),
+            'opposite_type' => ($item['type'] === 'lost') ? 'found' : 'lost'
+        ];
+
+        $pageTitle = 'Kecocokan untuk: ' . $item['title'] . ' - myUnila Lost & Found';
+
+        require_once __DIR__ . '/../views/items/matches.php';
     }
 
     public function show(): void
