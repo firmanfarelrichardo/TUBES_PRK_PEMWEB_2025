@@ -27,8 +27,27 @@ try {
             break;
             
         case 'items':
-            $pageTitle = 'Daftar Barang - myUnila Lost & Found';
-            require_once __DIR__ . '/views/items/index.php';
+            require_once __DIR__ . '/controllers/ItemController.php';
+            $controller = new ItemController();
+
+            if ($isPostRequest) {
+                match ($action) {
+                    'store'  => $controller->store(),
+                    'update' => $controller->update(),
+                    'delete' => $controller->delete(),
+                    default  => redirect('index.php?page=items')
+                };
+            } else {
+                match ($action) {
+                    'index', ''  => $controller->index(),
+                    'show'       => $controller->show(),
+                    'create'     => $controller->create(),
+                    'edit'       => $controller->edit(),
+                    'delete'     => $controller->delete(),
+                    'my'         => $controller->myItems(),
+                    default      => $controller->index()
+                };
+            }
             break;
             
         case 'auth':
