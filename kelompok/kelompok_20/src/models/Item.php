@@ -364,4 +364,32 @@ final class Item
 
         return $item && (int) $item['user_id'] === $userId;
     }
+
+    /**
+     * Get statistics for admin dashboard
+     * 
+     * @return array Statistics data
+     */
+    public function getStats(): array
+    {
+        // Total items by type
+        $sql = "SELECT 
+                    COUNT(*) as total_items,
+                    SUM(CASE WHEN type = 'lost' THEN 1 ELSE 0 END) as total_lost,
+                    SUM(CASE WHEN type = 'found' THEN 1 ELSE 0 END) as total_found,
+                    SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) as total_open,
+                    SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as total_closed
+                FROM items
+                WHERE deleted_at IS NULL";
+
+        $stmt = $this->db->query($sql);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            'total_items' => 0,
+            'total_lost' => 0,
+            'total_found' => 0,
+            'total_open' => 0,
+            'total_closed' => 0
+        ];
+    }
 }

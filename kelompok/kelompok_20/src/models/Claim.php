@@ -328,4 +328,17 @@ final class Claim
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Count verified claims (for admin dashboard)
+     * 
+     * @return int
+     */
+    public function countVerified(): int
+    {
+        $sql = "SELECT COUNT(*) FROM claims WHERE status = 'verified' AND deleted_at IS NULL";
+        $stmt = $this->db->query($sql);
+
+        return (int) $stmt->fetchColumn();
+    }
 }
