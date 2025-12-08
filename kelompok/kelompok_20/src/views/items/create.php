@@ -1,4 +1,11 @@
+<<<<<<< Updated upstream
 <!-- Create Item Form -->
+=======
+<?php 
+
+?>
+
+>>>>>>> Stashed changes
 <div class="min-h-screen gradient-mesh py-12 px-4">
     <div class="container mx-auto max-w-3xl">
         <!-- Header -->
@@ -17,6 +24,7 @@
                 action="<?= base_url('index.php?page=items&action=store') ?>" 
                 method="POST" 
                 enctype="multipart/form-data"
+                id="report-form"
                 class="space-y-6"
             >
                 <!-- Judul Barang -->
@@ -46,6 +54,7 @@
                                 type="radio" 
                                 name="type" 
                                 value="lost" 
+                                id="type_lost" 
                                 required
                                 class="peer sr-only"
                             >
@@ -70,6 +79,7 @@
                                 type="radio" 
                                 name="type" 
                                 value="found" 
+                                id="type_found" 
                                 required
                                 class="peer sr-only"
                             >
@@ -222,7 +232,7 @@
                             <label for="is_safe_claim" class="font-semibold text-slate-900 dark:text-white cursor-pointer">
                                 🔒 Aktifkan Fitur Safe Claim
                             </label>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            <p id="safe-claim-info" class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                 Lindungi barang Anda dengan pertanyaan keamanan. Hanya yang bisa menjawab dengan benar yang dapat mengklaim barang ini.
                             </p>
                         </div>
@@ -232,7 +242,7 @@
                     <div id="safe-claim-fields" class="hidden space-y-4 mt-4 pt-4 border-t border-primary-200 dark:border-primary-800/30">
                         <div>
                             <label for="security_question" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Pertanyaan Keamanan
+                                Pertanyaan Keamanan <span class="text-rose-500" id="sq-required">*</span>
                             </label>
                             <input 
                                 type="text" 
@@ -245,7 +255,7 @@
 
                         <div>
                             <label for="security_answer" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Jawaban Kunci
+                                Jawaban Kunci <span class="text-rose-500" id="sa-required">*</span>
                             </label>
                             <input 
                                 type="text" 
@@ -307,11 +317,19 @@
 // Image Preview Function
 function previewImage(event) {
     const file = event.target.files[0];
+<<<<<<< Updated upstream
     if (file) {
         // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
+=======
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+    if (file) {
+        if (file.size > maxFileSize) {
+>>>>>>> Stashed changes
             alert('File terlalu besar! Maksimal 5MB.');
             event.target.value = '';
+            removeImage();
             return;
         }
 
@@ -319,6 +337,7 @@ function previewImage(event) {
         if (!file.type.match('image.*')) {
             alert('File harus berupa gambar (PNG, JPG, JPEG)');
             event.target.value = '';
+            removeImage();
             return;
         }
 
@@ -344,45 +363,99 @@ function removeImage() {
 function toggleSafeClaim() {
     const checkbox = document.getElementById('is_safe_claim');
     const fields = document.getElementById('safe-claim-fields');
+    const typeFound = document.getElementById('type_found'); 
     const questionInput = document.getElementById('security_question');
     const answerInput = document.getElementById('security_answer');
     
-    if (checkbox.checked) {
+    const sqRequired = document.getElementById('sq-required');
+    const saRequired = document.getElementById('sa-required');
+
+    const isFoundSelected = typeFound.checked;
+
+    if (!isFoundSelected) {
+        checkbox.checked = false;
+        checkbox.disabled = true; 
+        checkbox.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+        document.getElementById('safe-claim-info').textContent = "Safe Claim hanya dapat diaktifkan untuk laporan barang Ditemukan.";
+    } else {
+        checkbox.disabled = false;
+        checkbox.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+        document.getElementById('safe-claim-info').textContent = "Lindungi barang Anda dengan pertanyaan keamanan. Hanya yang bisa menjawab dengan benar yang dapat mengklaim barang ini.";
+    }
+
+    if (checkbox.checked && isFoundSelected) {
         fields.classList.remove('hidden');
+        
         questionInput.setAttribute('required', 'required');
         answerInput.setAttribute('required', 'required');
+    
+        sqRequired.classList.remove('hidden');
+        saRequired.classList.remove('hidden');
+
     } else {
         fields.classList.add('hidden');
+        
         questionInput.removeAttribute('required');
         answerInput.removeAttribute('required');
-        questionInput.value = '';
-        answerInput.value = '';
+        questionInput.value = ''; 
+        answerInput.value = ''; 
+        
+        sqRequired.classList.add('hidden');
+        saRequired.classList.add('hidden');
     }
 }
 
+<<<<<<< Updated upstream
 // Drag and Drop for Image Upload
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('image');
+=======
+document.addEventListener('DOMContentLoaded', function() {
+    const typeFound = document.getElementById('type_found');
+    const typeLost = document.getElementById('type_lost');
+    const safeClaimCheckbox = document.getElementById('is_safe_claim');
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('image');
+    const textarea = document.getElementById('description');
+>>>>>>> Stashed changes
 
-dropzone.addEventListener('click', () => fileInput.click());
-
-dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
-});
-
-dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
-});
-
-dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+    toggleSafeClaim(); 
     
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        fileInput.files = files;
-        previewImage({ target: fileInput });
+    typeFound.addEventListener('change', toggleSafeClaim);
+    typeLost.addEventListener('change', toggleSafeClaim);
+    safeClaimCheckbox.addEventListener('change', toggleSafeClaim);
+    
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
     }
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            previewImage({ target: fileInput }); 
+        }
+    });
+    
+    dropzone.addEventListener('click', () => {
+        if (document.getElementById('image-preview').classList.contains('hidden')) {
+            fileInput.click();
+        }
+    });
 });
 </script>
