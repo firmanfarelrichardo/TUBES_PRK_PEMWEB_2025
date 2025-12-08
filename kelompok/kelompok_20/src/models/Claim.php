@@ -341,4 +341,19 @@ final class Claim
 
         return (int) $stmt->fetchColumn();
     }
+
+    /**
+     * Count claims by user ID
+     * 
+     * @param int $userId User ID
+     * @return int
+     */
+    public function countByUserId(int $userId): int
+    {
+        $sql = "SELECT COUNT(*) FROM claims WHERE user_id = :user_id AND deleted_at IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+
+        return (int) $stmt->fetchColumn();
+    }
 }

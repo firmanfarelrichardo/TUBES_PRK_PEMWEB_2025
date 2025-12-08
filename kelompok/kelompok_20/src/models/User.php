@@ -113,6 +113,55 @@ final class User
     }
 
     /**
+     * Update user profile
+     * 
+     * @param int $id User ID
+     * @param array $data User data to update
+     * @return bool
+     */
+    public function update(int $id, array $data): bool
+    {
+        $fields = [];
+        $params = [':id' => $id];
+
+        // Name
+        if (isset($data['name'])) {
+            $fields[] = "name = :name";
+            $params[':name'] = $data['name'];
+        }
+
+        // Phone
+        if (isset($data['phone'])) {
+            $fields[] = "phone = :phone";
+            $params[':phone'] = $data['phone'];
+        }
+
+        // Password (only if provided)
+        if (!empty($data['password'])) {
+            $fields[] = "password = :password";
+            $params[':password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        // Avatar
+        if (isset($data['avatar'])) {
+            $fields[] = "avatar = :avatar";
+            $params[':avatar'] = $data['avatar'];
+        }
+
+        // Always update timestamp
+        $fields[] = "updated_at = NOW()";
+
+        if (empty($fields)) {
+            return false;
+        }
+
+        $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute($params);
+    }
+
+    /**
      * Soft delete a user
      * 
      * @param int $id User ID

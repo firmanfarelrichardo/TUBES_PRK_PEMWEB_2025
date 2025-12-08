@@ -291,6 +291,15 @@ final class Item
         return (int) $stmt->fetchColumn();
     }
 
+    public function countByUserId(int $userId): int
+    {
+        $sql = "SELECT COUNT(*) FROM items WHERE user_id = :user_id AND deleted_at IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function countAll(): int
     {
         $sql = "SELECT COUNT(*) FROM items WHERE deleted_at IS NULL";
