@@ -4,21 +4,24 @@
         
         <div class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
-                Buat Laporan Baru
+                Edit Laporan
             </h1>
             <p class="text-slate-600 dark:text-slate-400">
-                Laporkan barang yang hilang atau ditemukan untuk membantu sesama civitas Unila
+                Perbarui informasi barang yang hilang atau ditemukan
             </p>
         </div>
 
         
         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-6 md:p-8">
             <form 
-                action="<?= base_url('index.php?page=items&action=store') ?>" 
+                action="<?= base_url('index.php?page=items&action=update') ?>" 
                 method="POST" 
                 enctype="multipart/form-data"
                 class="space-y-6"
             >
+                
+                <input type="hidden" name="id" value="<?= $item['id'] ?>">
+
                 
                 <div>
                     <label for="title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -29,6 +32,7 @@
                         id="title" 
                         name="title" 
                         required
+                        value="<?= htmlspecialchars($item['title']) ?>"
                         placeholder="Contoh: Dompet Kulit Coklat, Kunci Motor Honda, dll"
                         class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                     >
@@ -47,6 +51,7 @@
                                 name="type" 
                                 value="lost" 
                                 required
+                                <?= $item['type'] === 'lost' ? 'checked' : '' ?>
                                 class="peer sr-only"
                             >
                             <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/30 peer-checked:shadow-lg peer-checked:shadow-rose-500/20 hover:border-rose-300 dark:hover:border-rose-700">
@@ -71,6 +76,7 @@
                                 name="type" 
                                 value="found" 
                                 required
+                                <?= $item['type'] === 'found' ? 'checked' : '' ?>
                                 class="peer sr-only"
                             >
                             <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-teal-500 peer-checked:bg-teal-50 dark:peer-checked:bg-teal-950/30 peer-checked:shadow-lg peer-checked:shadow-teal-500/20 hover:border-teal-300 dark:hover:border-teal-700">
@@ -106,7 +112,7 @@
                         >
                             <option value="">Pilih Kategori</option>
                             <?php foreach ($categories as $category): ?>
-                                <option value="<?= $category['id'] ?>">
+                                <option value="<?= $category['id'] ?>" <?= $item['category_id'] == $category['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($category['name']) ?>
                                 </option>
                             <?php endforeach; ?>
@@ -127,7 +133,7 @@
                         >
                             <option value="">Pilih Lokasi</option>
                             <?php foreach ($locations as $location): ?>
-                                <option value="<?= $location['id'] ?>">
+                                <option value="<?= $location['id'] ?>" <?= $item['location_id'] == $location['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($location['name']) ?>
                                 </option>
                             <?php endforeach; ?>
@@ -145,11 +151,50 @@
                         id="incident_date" 
                         name="incident_date" 
                         required
+                        value="<?= $item['incident_date'] ?>"
                         max="<?= date('Y-m-d') ?>"
                         class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                     >
                 </div>
 
+                
+                <?php if (!empty($item['image_path'])): ?>
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                        Foto Saat Ini
+                    </label>
+                    <div class="flex items-start gap-4">
+                        <img 
+                            src="<?= base_url($item['image_path']) ?>" 
+                            alt="Current image"
+                            class="w-32 h-32 object-cover rounded-lg shadow-md"
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%23cbd5e1%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z%27/%3E%3C/svg%3E'"
+                        >
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                                Upload foto baru jika ingin mengubah gambar
+                            </p>
+                            <label class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
+                                Ubah Foto
+                                <input 
+                                    type="file" 
+                                    name="image" 
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="previewNewImage(event)"
+                                >
+                            </label>
+                        </div>
+                    </div>
+                    <div id="new-image-preview" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Preview Foto Baru:</p>
+                        <img id="preview-new-img" src="" alt="New preview" class="max-h-48 rounded-lg shadow-lg">
+                    </div>
+                </div>
+                <?php else: ?>
                 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -188,6 +233,7 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 
                 <div>
@@ -201,7 +247,7 @@
                         rows="5"
                         placeholder="Jelaskan ciri-ciri barang, warna, merek, kondisi, dan detail lainnya yang membantu identifikasi..."
                         class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
-                    ></textarea>
+                    ><?= htmlspecialchars($item['description']) ?></textarea>
                     <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
                         Semakin detail, semakin mudah barang ditemukan atau diklaim pemiliknya
                     </p>
@@ -215,12 +261,13 @@
                             id="is_safe_claim" 
                             name="is_safe_claim" 
                             value="1"
+                            <?= !empty($item['is_safe_claim']) ? 'checked' : '' ?>
                             onchange="toggleSafeClaim()"
                             class="w-5 h-5 mt-0.5 text-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-primary-500 cursor-pointer"
                         >
                         <div class="flex-1">
                             <label for="is_safe_claim" class="font-semibold text-slate-900 dark:text-white cursor-pointer">
-                                🔒 Aktifkan Fitur Safe Claim
+                                Aktifkan Fitur Safe Claim
                             </label>
                             <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                 Lindungi barang Anda dengan pertanyaan keamanan. Hanya yang bisa menjawab dengan benar yang dapat mengklaim barang ini.
@@ -229,7 +276,7 @@
                     </div>
 
                     
-                    <div id="safe-claim-fields" class="hidden space-y-4 mt-4 pt-4 border-t border-primary-200 dark:border-primary-800/30">
+                    <div id="safe-claim-fields" class="<?= empty($item['is_safe_claim']) ? 'hidden' : '' ?> space-y-4 mt-4 pt-4 border-t border-primary-200 dark:border-primary-800/30">
                         <div>
                             <label for="security_question" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                                 Pertanyaan Keamanan
@@ -238,8 +285,10 @@
                                 type="text" 
                                 id="security_question" 
                                 name="security_question" 
+                                value="<?= htmlspecialchars($item['security_question'] ?? '') ?>"
                                 placeholder="Contoh: Apa warna casing HP ini? Merek jam tangan apa?"
                                 class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                                <?= !empty($item['is_safe_claim']) ? 'required' : '' ?>
                             >
                         </div>
 
@@ -251,11 +300,13 @@
                                 type="text" 
                                 id="security_answer" 
                                 name="security_answer" 
+                                value="<?= htmlspecialchars($item['security_answer'] ?? '') ?>"
                                 placeholder="Jawaban yang benar (case-insensitive)"
                                 class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                                <?= !empty($item['is_safe_claim']) ? 'required' : '' ?>
                             >
                             <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                                💡 Tips: Gunakan jawaban yang spesifik dan sulit ditebak orang lain
+                                Tips: Gunakan jawaban yang spesifik dan sulit ditebak orang lain
                             </p>
                         </div>
                     </div>
@@ -270,10 +321,10 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        Buat Laporan
+                        Simpan Perubahan
                     </button>
                     <a 
-                        href="<?= base_url('index.php?page=items') ?>"
+                        href="<?= base_url('index.php?page=items&action=show&id=' . $item['id']) ?>"
                         class="flex-1 px-6 py-3.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all text-center"
                     >
                         Batal
@@ -289,12 +340,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div class="text-sm text-sky-900 dark:text-sky-200">
-                    <p class="font-semibold mb-1">Tips Membuat Laporan yang Efektif:</p>
+                    <p class="font-semibold mb-1">Perhatian:</p>
                     <ul class="list-disc list-inside space-y-1 text-sky-800 dark:text-sky-300">
-                        <li>Sertakan foto yang jelas untuk mempermudah identifikasi</li>
-                        <li>Tuliskan deskripsi yang detail dan spesifik</li>
-                        <li>Gunakan fitur Safe Claim untuk barang berharga</li>
-                        <li>Pastikan lokasi dan tanggal kejadian akurat</li>
+                        <li>Pastikan informasi yang diubah tetap akurat</li>
+                        <li>Foto baru akan menggantikan foto lama jika diupload</li>
+                        <li>Safe Claim dapat diaktifkan atau dinonaktifkan sesuai kebutuhan</li>
                     </ul>
                 </div>
             </div>
@@ -304,6 +354,31 @@
 
 
 <script>
+
+function previewNewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File terlalu besar! Maksimal 5MB.');
+            event.target.value = '';
+            return;
+        }
+
+        if (!file.type.match('image.*')) {
+            alert('File harus berupa gambar (PNG, JPG, JPEG)');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-new-img').src = e.target.result;
+            document.getElementById('new-image-preview').classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+    }
+}
 
 function previewImage(event) {
     const file = event.target.files[0];
@@ -352,33 +427,33 @@ function toggleSafeClaim() {
         fields.classList.add('hidden');
         questionInput.removeAttribute('required');
         answerInput.removeAttribute('required');
-        questionInput.value = '';
-        answerInput.value = '';
     }
 }
 
 const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('image');
-
-dropzone.addEventListener('click', () => fileInput.click());
-
-dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
-});
-
-dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
-});
-
-dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+if (dropzone) {
+    const fileInput = document.getElementById('image');
     
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        fileInput.files = files;
-        previewImage({ target: fileInput });
-    }
-});
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-950/30');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            previewImage({ target: fileInput });
+        }
+    });
+}
 </script>

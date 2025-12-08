@@ -150,12 +150,24 @@ try {
             break;
             
         case 'profile':
-            if (!isLoggedIn()) {
-                flash('message', 'Silakan login terlebih dahulu', 'error');
-                redirect('index.php?page=auth&action=login');
+            require_once __DIR__ . '/controllers/ProfileController.php';
+            require_once __DIR__ . '/models/User.php';
+            require_once __DIR__ . '/models/Item.php';
+            require_once __DIR__ . '/models/Claim.php';
+            
+            $controller = new ProfileController();
+
+            if ($isPostRequest) {
+                match ($action) {
+                    'update' => $controller->update(),
+                    default  => redirect('index.php?page=profile')
+                };
+            } else {
+                match ($action) {
+                    'index', '' => $controller->index(),
+                    default     => $controller->index()
+                };
             }
-            $pageTitle = 'Profil - myUnila Lost & Found';
-            require_once __DIR__ . '/views/profile/index.php';
             break;
             
         case 'admin':
@@ -196,8 +208,7 @@ try {
     error_log('Router Error: ' . $e->getMessage());
     error_log('Stack trace: ' . $e->getTraceAsString());
     http_response_code(500);
-    
-    // Show detailed error in development
+
     echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Error</title></head><body style="font-family: sans-serif; padding: 40px; background: #1e293b; color: #e2e8f0;">';
     echo '<div style="max-width: 800px; margin: 0 auto;">';
     echo '<h1 style="color: #ef4444; font-size: 2rem; margin-bottom: 1rem;">⚠️ Application Error</h1>';

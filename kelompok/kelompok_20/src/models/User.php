@@ -74,13 +74,7 @@ final class User
         return $this->findByIdentityNumber($identityNumber) !== false;
     }
 
-    /**
-     * Get all users with pagination
-     * 
-     * @param int $limit Number of users per page
-     * @param int $offset Offset for pagination
-     * @return array
-     */
+    
     public function getAll(int $limit = 20, int $offset = 0): array
     {
         $sql = "SELECT 
@@ -99,11 +93,7 @@ final class User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Count all active users
-     * 
-     * @return int
-     */
+    
     public function countAll(): int
     {
         $sql = "SELECT COUNT(*) FROM users WHERE deleted_at IS NULL";
@@ -112,12 +102,45 @@ final class User
         return (int) $stmt->fetchColumn();
     }
 
-    /**
-     * Soft delete a user
-     * 
-     * @param int $id User ID
-     * @return bool
-     */
+    
+    public function update(int $id, array $data): bool
+    {
+        $fields = [];
+        $params = [':id' => $id];
+
+        if (isset($data['name'])) {
+            $fields[] = "name = :name";
+            $params[':name'] = $data['name'];
+        }
+
+        if (isset($data['phone'])) {
+            $fields[] = "phone = :phone";
+            $params[':phone'] = $data['phone'];
+        }
+
+        if (!empty($data['password'])) {
+            $fields[] = "password = :password";
+            $params[':password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        if (isset($data['avatar'])) {
+            $fields[] = "avatar = :avatar";
+            $params[':avatar'] = $data['avatar'];
+        }
+
+        $fields[] = "updated_at = NOW()";
+
+        if (empty($fields)) {
+            return false;
+        }
+
+        $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute($params);
+    }
+
+    
     public function delete(int $id): bool
     {
         $sql = "UPDATE users SET deleted_at = NOW(), is_active = 0 WHERE id = :id";
