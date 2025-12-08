@@ -162,8 +162,24 @@ try {
                 flash('message', 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error');
                 redirect('index.php?page=home');
             }
-            $pageTitle = 'Dashboard Admin - myUnila Lost & Found';
-            require_once __DIR__ . '/views/admin/dashboard.php';
+
+            require_once __DIR__ . '/controllers/AdminController.php';
+            $adminController = new AdminController();
+
+            if ($isPostRequest) {
+                match ($action) {
+                    'delete_user' => $adminController->deleteUser(),
+                    'delete_item' => $adminController->deleteItem(),
+                    default       => redirect('index.php?page=admin')
+                };
+            } else {
+                match ($action) {
+                    'users'        => $adminController->users(),
+                    'items'        => $adminController->items(),
+                    'dashboard', '' => $adminController->dashboard(),
+                    default        => $adminController->dashboard()
+                };
+            }
             break;
             
         default:
