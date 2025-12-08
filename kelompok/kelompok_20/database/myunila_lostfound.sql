@@ -129,6 +129,3 @@ INSERT INTO locations (id, name) VALUES
 (18, 'Poliklinik Unila'),
 (19, 'Asrama Mahasiswa'),
 (20, 'Lainnya');
-
-INSERT INTO users (id, name, npm, email, password, phone, role, is_active) VALUES
-(1, 'Administrator', '0000000000', 'admin@unila.ac.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '081234567890', 'admin', 1);
