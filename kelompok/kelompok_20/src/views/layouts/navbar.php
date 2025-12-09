@@ -19,6 +19,7 @@ function is_active(string $page_name, array $params = []): string {
     // 1. Pencocokan Halaman Beranda (index.php tanpa parameter page)
     if ($page_name === 'home') {
         if ($current_page === 'home' || $current_page === 'index' || (!isset($_GET['page']))) {
+            // Ini adalah kelas yang mendefinisikan tampilan aktif
             return ' text-primary-600 dark:text-primary-400 font-bold';
         }
         return '';
@@ -43,6 +44,7 @@ function is_active(string $page_name, array $params = []): string {
     
     // Jika semua parameter cocok, kembalikan kelas aktif
     if ($params_match) {
+        // Ini adalah kelas yang mendefinisikan tampilan aktif
         return ' text-primary-600 dark:text-primary-400 font-bold'; 
     }
 
@@ -65,29 +67,38 @@ $current_page = $_GET['page'] ?? 'home';
             </a>
             
             <div class="hidden md:flex items-center gap-1">
-                <?php $active_home = is_active('home'); ?>
+                <?php 
+                // Deklarasi variabel aktif untuk menu desktop
+                $active_home = is_active('home');
+                $active_lost = is_active('items', ['type' => 'lost']);
+                $active_found = is_active('items', ['type' => 'found']);
+                ?>
+                
                 <a href="<?= base_url('index.php') ?>" class="px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium text-sm <?= $active_home ? $active_home : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                     Beranda
                 </a>
                 
-                <?php $active_lost = is_active('items', ['type' => 'lost']); ?>
                 <a href="<?= base_url('index.php?page=items&type=lost') ?>" class="px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium text-sm <?= $active_lost ? $active_lost : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                     Barang Hilang
                 </a>
                 
-                <?php $active_found = is_active('items', ['type' => 'found']); ?>
                 <a href="<?= base_url('index.php?page=items&type=found') ?>" class="px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium text-sm <?= $active_found ? $active_found : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                     Barang Temuan
                 </a>
                 
                 <?php if (isLoggedIn()): ?>
                     <?php
+                    // Ambil notifikasi di sini, jadi tersedia untuk desktop dan mobile
                     require_once __DIR__ . '/../../models/Notification.php';
                     $notifModel = new Notification();
                     $unread_count = $notifModel->countUnread((int)$_SESSION['user']['id']);
+                    $active_notif = is_active('notifications');
+                    
+                    $active_profile = is_active('profile');
+                    $active_my_items = is_active('items', ['action' => 'my']);
+                    $active_admin = is_active('admin');
                     ?>
                     
-                    <?php $active_notif = is_active('notifications'); ?>
                     <a href="<?= base_url('index.php?page=notifications') ?>" class="relative p-2 ml-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all <?= $active_notif ? 'text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -111,14 +122,12 @@ $current_page = $_GET['page'] ?? 'home';
                         </button>
                         
                         <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 hidden group-hover:block">
-                            <?php $active_profile = is_active('profile'); ?>
                             <a href="<?= base_url('index.php?page=profile') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_profile ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                 <svg class="w-5 h-5 <?= $active_profile ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 Profil Saya
                             </a>
-                            <?php $active_my_items = is_active('items', ['action' => 'my']); ?>
                             <a href="<?= base_url('index.php?page=items&action=my') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_my_items ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                 <svg class="w-5 h-5 <?= $active_my_items ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -126,7 +135,6 @@ $current_page = $_GET['page'] ?? 'home';
                                 Laporan Saya
                             </a>
                             <?php if (isAdmin()): ?>
-                                <?php $active_admin = is_active('admin'); ?>
                                 <a href="<?= base_url('index.php?page=admin') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_admin ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                     <svg class="w-5 h-5 <?= $active_admin ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -163,17 +171,30 @@ $current_page = $_GET['page'] ?? 'home';
         
         <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-slate-200 dark:border-slate-700 mt-2 pt-4">
             <div class="flex flex-col gap-1">
-                <?php $active_home_mobile = is_active('home'); ?>
+                <?php
+                // Deklarasi variabel aktif untuk menu mobile. 
+                // Beberapa sudah diambil di blok desktop jika isLoggedIn() true.
+                $active_home_mobile = is_active('home');
+                $active_lost_mobile = is_active('items', ['type' => 'lost']);
+                $active_found_mobile = is_active('items', ['type' => 'found']);
+                ?>
+
                 <a href="<?= base_url('index.php') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_home_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Beranda</a>
                 
-                <?php $active_lost_mobile = is_active('items', ['type' => 'lost']); ?>
                 <a href="<?= base_url('index.php?page=items&type=lost') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_lost_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Barang Hilang</a>
                 
-                <?php $active_found_mobile = is_active('items', ['type' => 'found']); ?>
                 <a href="<?= base_url('index.php?page=items&type=found') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_found_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Barang Temuan</a>
                 
                 <?php if (isLoggedIn()): ?>
-                    <?php $active_notif_mobile = is_active('notifications'); ?>
+                    <?php 
+                    // Pastikan variabel aktif yang digunakan di mobile sudah didefinisikan 
+                    // (Mereferensikan yang sudah didefinisikan di blok desktop, atau didefinisikan ulang jika perlu)
+                    $active_notif_mobile = $active_notif ?? is_active('notifications');
+                    $active_profile_mobile = $active_profile ?? is_active('profile');
+                    $active_my_items_mobile = $active_my_items ?? is_active('items', ['action' => 'my']);
+                    $active_admin_mobile = $active_admin ?? is_active('admin');
+                    ?>
+
                     <a href="<?= base_url('index.php?page=notifications') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium flex items-center justify-between<?= $active_notif_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">
                         <span>Notifikasi</span>
                         <?php if (isset($unread_count) && $unread_count > 0): ?>
@@ -184,14 +205,11 @@ $current_page = $_GET['page'] ?? 'home';
                     </a>
                     <hr class="my-2 border-slate-200 dark:border-slate-700">
                     
-                    <?php $active_profile_mobile = is_active('profile'); ?>
                     <a href="<?= base_url('index.php?page=profile') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_profile_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Profil</a>
                     
-                    <?php $active_my_items_mobile = is_active('items', ['action' => 'my']); ?>
                     <a href="<?= base_url('index.php?page=items&action=my') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_my_items_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Laporan Saya</a>
                     
                     <?php if (isAdmin()): ?>
-                        <?php $active_admin_mobile = is_active('admin'); ?>
                         <a href="<?= base_url('index.php?page=admin') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_admin_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Dashboard Admin</a>
                     <?php endif; ?>
                     
