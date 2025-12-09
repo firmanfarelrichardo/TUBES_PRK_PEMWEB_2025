@@ -9,6 +9,8 @@ ini_set('display_errors', '1');
 
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/core/Functions.php';
+require_once __DIR__ . '/core/DatabaseSetup.php'; 
+setupPasswordResetsTable();
 
 $page = $_GET['page'] ?? 'home';
 $action = $_GET['action'] ?? 'index';
