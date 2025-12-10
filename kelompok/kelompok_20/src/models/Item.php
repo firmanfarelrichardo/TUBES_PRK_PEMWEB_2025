@@ -381,4 +381,36 @@ final class Item
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllForAdmin(int $limit = 20, int $offset = 0): array
+    {
+        $sql = "SELECT 
+                    i.*,
+                    u.name AS user_name,
+                    u.identity_number AS user_identity,
+                    u.avatar AS user_avatar,
+                    c.name AS category_name,
+                    l.name AS location_name
+                FROM items i
+                JOIN users u ON i.user_id = u.id
+                JOIN categories c ON i.category_id = c.id
+                JOIN locations l ON i.location_id = l.id
+                WHERE i.deleted_at IS NULL
+                ORDER BY i.created_at DESC
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countAllForAdmin(): int
+    {
+        $sql = "SELECT COUNT(*) FROM items WHERE deleted_at IS NULL";
+        $stmt = $this->db->query($sql);
+        return (int) $stmt->fetchColumn();
+    }
 }
