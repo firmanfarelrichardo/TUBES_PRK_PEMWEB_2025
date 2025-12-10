@@ -19,10 +19,8 @@ final class AdminController
         $this->claimModel = new Claim();
     }
 
-    
     public function dashboard(): void
     {
-
         if (!isAdmin()) {
             flash('message', 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error');
             redirect('index.php?page=home');
@@ -32,6 +30,9 @@ final class AdminController
         $totalUsers = $this->userModel->countAll();
         $itemStats = $this->itemModel->getStats();
         $totalVerifiedClaims = $this->claimModel->countVerified();
+        
+        // --- AMBIL DATA PENDING UNTUK MODERASI ---
+        $pendingItems = $this->itemModel->getPendingItems();
 
         $stats = [
             'total_users' => $totalUsers,
@@ -47,10 +48,8 @@ final class AdminController
         require_once __DIR__ . '/../views/admin/dashboard.php';
     }
 
-    
     public function users(): void
     {
-
         if (!isAdmin()) {
             flash('message', 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error');
             redirect('index.php?page=home');
@@ -69,16 +68,16 @@ final class AdminController
         require_once __DIR__ . '/../views/admin/users.php';
     }
 
-    
-    public function items(): void
+   public function items(): void
     {
-
+        
         if (!isAdmin()) {
             flash('message', 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error');
             redirect('index.php?page=home');
             return;
         }
 
+        
         $page = isset($_GET['p']) ? max(1, (int) $_GET['p']) : 1;
         $limit = 20;
         $offset = ($page - 1) * $limit;
@@ -89,18 +88,19 @@ final class AdminController
             'sort' => 'newest'
         ];
         
+        
         $items = $this->itemModel->getAll($filters);
         $totalItems = $this->itemModel->countAllFiltered([]);
         $totalPages = (int) ceil($totalItems / $limit);
 
         $pageTitle = 'Kelola Barang - Admin';
+
+        // Render only the view fragment; layout is applied by index.php
         require_once __DIR__ . '/../views/admin/items.php';
     }
 
-    
     public function deleteUser(): void
     {
-
         if (!isAdmin()) {
             if ($this->isAjaxRequest()) {
                 http_response_code(403);
@@ -147,7 +147,9 @@ final class AdminController
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => $deleted,
-                'message' => $deleted ? 'User berhasil dinonaktifkan' : 'Gagal menonaktifkan user'
+                'message' => $deleted ? 'User berhasil dinonaktifkan' : 'Gagal menonaktifkan user',
+                'user_id' => $userId,
+                'is_active' => $deleted ? 0 : 1
             ]);
             exit;
         }
@@ -161,10 +163,86 @@ final class AdminController
         redirect('index.php?page=admin&action=users');
     }
 
-    
+    public function toggleActive(): void
+    {
+        if (!isAdmin()) {
+            if ($this->isAjaxRequest()) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Akses ditolak']);
+                exit;
+            }
+            flash('message', 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.', 'error');
+            redirect('index.php?page=home');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('index.php?page=admin&action=users');
+            return;
+        }
+
+        $userId = (int) ($_POST['id'] ?? 0);
+        if ($userId <= 0) {
+            if ($this->isAjaxRequest()) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'ID pengguna tidak valid']);
+                exit;
+            }
+            flash('message', 'ID pengguna tidak valid.', 'error');
+            redirect('index.php?page=admin&action=users');
+            return;
+        }
+
+        if ($userId === ($_SESSION['user_id'] ?? null)) {
+            if ($this->isAjaxRequest()) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Tidak dapat mengubah status akun sendiri']);
+                exit;
+            }
+            flash('message', 'Tidak dapat mengubah status akun sendiri.', 'error');
+            redirect('index.php?page=admin&action=users');
+            return;
+        }
+
+        $user = $this->userModel->findById($userId);
+        if (!$user) {
+            if ($this->isAjaxRequest()) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Pengguna tidak ditemukan']);
+                exit;
+            }
+            flash('message', 'Pengguna tidak ditemukan.', 'error');
+            redirect('index.php?page=admin&action=users');
+            return;
+        }
+
+        $current = isset($user['is_active']) ? (int)$user['is_active'] : 0;
+        $newState = $current ? 0 : 1;
+
+        $updated = $this->userModel->setActive($userId, $newState);
+
+        if ($this->isAjaxRequest()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => $updated,
+                'message' => $updated ? ($newState ? 'User diaktifkan kembali' : 'User dinonaktifkan') : 'Gagal mengubah status',
+                'user_id' => $userId,
+                'is_active' => $newState
+            ]);
+            exit;
+        }
+
+        if ($updated) {
+            flash('message', $newState ? 'User diaktifkan kembali.' : 'User berhasil dinonaktifkan.', 'success');
+        } else {
+            flash('message', 'Gagal mengubah status user.', 'error');
+        }
+
+        redirect('index.php?page=admin&action=users');
+    }
+
     public function deleteItem(): void
     {
-
         if (!isAdmin()) {
             if ($this->isAjaxRequest()) {
                 http_response_code(403);
@@ -214,7 +292,42 @@ final class AdminController
         redirect('index.php?page=admin&action=items');
     }
 
+    public function approveItem(): void
+    {
+        if (!isAdmin()) {
+            flash('message', 'Akses ditolak.', 'error');
+            redirect('index.php?page=home');
+            return;
+        }
+
+        $id = (int) ($_GET['id'] ?? 0);
+       
+        if ($id > 0 && $this->itemModel->updateStatus($id, 'open')) {
+            flash('message', 'Postingan berhasil disetujui dan kini tampil di publik.', 'success');
+        } else {
+            flash('message', 'Gagal menyetujui postingan.', 'error');
+        }
+        redirect('index.php?page=admin&action=dashboard');
+    }
+
+    public function rejectItem(): void
+    {
+        if (!isAdmin()) {
+            flash('message', 'Akses ditolak.', 'error');
+            redirect('index.php?page=home');
+            return;
+        }
+
+        $id = (int) ($_GET['id'] ?? 0);
     
+        if ($id > 0 && $this->itemModel->updateStatus($id, 'rejected')) {
+            flash('message', 'Postingan telah ditolak.', 'success');
+        } else {
+            flash('message', 'Gagal menolak postingan.', 'error');
+        }
+        redirect('index.php?page=admin&action=dashboard');
+    }
+
     private function isAjaxRequest(): bool
     {
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) 

@@ -88,6 +88,22 @@ $current_page = $_GET['page'] ?? 'home';
                 
                 <?php if (isLoggedIn()): ?>
                     <?php
+                    // Notifications are optional in navbar; protect against DB errors
+                    $unread_count = 0;
+                    try {
+                        // load model if available
+                        $modelPath = __DIR__ . '/../../models/Notification.php';
+                        if (file_exists($modelPath)) {
+                            require_once $modelPath;
+                        }
+                        if (class_exists('Notification')) {
+                            $notifModel = new Notification();
+                            $unread_count = (int) $notifModel->countUnread((int)($_SESSION['user']['id'] ?? 0));
+                        }
+                    } catch (Throwable $e) {
+                        error_log('Navbar notification error: ' . $e->getMessage());
+                        $unread_count = 0;
+                    }
                     // Ambil notifikasi di sini, jadi tersedia untuk desktop dan mobile
                     require_once __DIR__ . '/../../models/Notification.php';
                     $notifModel = new Notification();
