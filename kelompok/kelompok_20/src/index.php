@@ -181,9 +181,10 @@ try {
 
             if ($isPostRequest) {
                 match ($action) {
-                    'delete_user' => $adminController->deleteUser(),
-                    'delete_item' => $adminController->deleteItem(),
-                    default       => redirect('index.php?page=admin')
+                    'delete_user'   => $adminController->deleteUser(),
+                    'delete_item'   => $adminController->deleteItem(),
+                    'toggle_active' => $adminController->toggleActive(),
+                    default         => redirect('index.php?page=admin')
                 };
             } else {
                 match ($action) {
@@ -223,6 +224,12 @@ try {
 }
 
 $content = ob_get_clean();
+
+// If AJAX fragment requested (used by admin partial loading), return only content
+if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+    echo $content;
+    exit;
+}
 
 $layout = ($page === 'admin') ? 'admin' : 'main';
 require_once __DIR__ . '/views/layouts/' . $layout . '.php';

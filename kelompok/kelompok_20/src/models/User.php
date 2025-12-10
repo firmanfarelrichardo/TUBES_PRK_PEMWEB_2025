@@ -77,20 +77,32 @@ final class User
     
     public function getAll(int $limit = 20, int $offset = 0): array
     {
-        $sql = "SELECT 
-                    id, name, npm, email, phone, avatar, role, is_active, 
-                    created_at, updated_at, deleted_at
-                FROM users
-                WHERE deleted_at IS NULL
-                ORDER BY created_at DESC
-                LIMIT :limit OFFSET :offset";
+        // Use SELECT * to avoid referencing column names that may differ between DBs.
+        // Normalize the returned rows so the caller always has an `npm` field.
+        $limit = max(0, (int) $limit);
+        $offset = max(0, (int) $offset);
+
+        $sql = "SELECT * FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT " . $limit . " OFFSET " . $offset;
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Normalize: ensure 'npm' key exists (map from common column names)
+        foreach ($rows as &$row) {
+            if (!isset($row['npm'])) {
+                if (isset($row['identity_number'])) {
+                    $row['npm'] = $row['identity_number'];
+                } elseif (isset($row['identitynumber'])) {
+                    $row['npm'] = $row['identitynumber'];
+                } else {
+                    $row['npm'] = '';
+                }
+            }
+        }
+
+        return $rows;
     }
 
     
@@ -147,5 +159,13 @@ final class User
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function setActive(int $id, int $isActive): bool
+    {
+        $sql = "UPDATE users SET is_active = :is_active, updated_at = NOW() WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([':is_active' => $isActive, ':id' => $id]);
     }
 }

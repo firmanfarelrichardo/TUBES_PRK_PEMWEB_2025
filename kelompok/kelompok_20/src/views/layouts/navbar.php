@@ -22,9 +22,22 @@
                 
                 <?php if (isLoggedIn()): ?>
                     <?php
-                    require_once __DIR__ . '/../../models/Notification.php';
-                    $notifModel = new Notification();
-                    $unread_count = $notifModel->countUnread((int)$_SESSION['user']['id']);
+                    // Notifications are optional in navbar; protect against DB errors
+                    $unread_count = 0;
+                    try {
+                        // load model if available
+                        $modelPath = __DIR__ . '/../../models/Notification.php';
+                        if (file_exists($modelPath)) {
+                            require_once $modelPath;
+                        }
+                        if (class_exists('Notification')) {
+                            $notifModel = new Notification();
+                            $unread_count = (int) $notifModel->countUnread((int)($_SESSION['user']['id'] ?? 0));
+                        }
+                    } catch (Throwable $e) {
+                        error_log('Navbar notification error: ' . $e->getMessage());
+                        $unread_count = 0;
+                    }
                     ?>
                     <a href="<?= base_url('index.php?page=notifications') ?>" class="relative p-2 ml-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400 transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
