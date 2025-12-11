@@ -36,7 +36,7 @@ $shouldBlurImage = !empty($item['is_safe_claim']) && !$isOwner && !isAdmin();
                             // Check if image_path is external URL or local path
                             $imageSrc = (strpos($item['image_path'], 'http://') === 0 || strpos($item['image_path'], 'https://') === 0) 
                                 ? $item['image_path'] 
-                                : base_url('src/assets/uploads/items/' . $item['image_path']);
+                                : base_url('assets/uploads/items/' . $item['image_path']);
                             ?>
                             <img 
                                 id="itemImage"

@@ -95,8 +95,8 @@ final class ClaimController
 
         $this->notificationModel->create(
             (int) $item['user_id'],
-            '📢 Klaim Baru di Laporan Anda',
-            $_SESSION['user']['name'] . ' mengajukan klaim untuk barang Anda: "' . $item['title'] . '". Cek dan verifikasi sekarang!',
+            'Klaim Baru',
+            $_SESSION['user']['name'] . ' mengajukan klaim untuk barang Anda: "' . $item['title'] . '"',
             'index.php?page=items&action=show&id=' . $itemId . '#claims',
             'new_claim'
         );
@@ -164,7 +164,7 @@ final class ClaimController
             'Klaim Diverifikasi! 🎉',
             'Klaim Anda untuk "' . $item['title'] . '" telah diverifikasi! Silakan hubungi pemilik untuk pengambilan.',
             'index.php?page=items&action=show&id=' . $item['id'],
-            'claim_verified'
+            'claim_accepted'
         );
 
         flash('message', 'Klaim berhasil diverifikasi! Item telah ditandai sebagai selesai.', 'success');

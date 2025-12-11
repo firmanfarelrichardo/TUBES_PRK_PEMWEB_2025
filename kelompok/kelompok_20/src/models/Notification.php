@@ -13,7 +13,7 @@ final class Notification
     }
 
     
-    public function create(int $userId, string $title, string $message, ?string $link = null, string $type = 'general'): bool
+    public function create(int $userId, string $title, string $message, ?string $link = null, string $type = 'default'): bool
     {
         $sql = "INSERT INTO notifications (user_id, title, message, link, type, is_read, created_at)
                 VALUES (:user_id, :title, :message, :link, :type, 0, NOW())";
@@ -34,7 +34,7 @@ final class Notification
     {
         try {
             $limit = (int) $limit;
-            $sql = "SELECT id, title, message, link, is_read, created_at
+            $sql = "SELECT id, title, message, link, type, is_read, created_at
                     FROM notifications
                     WHERE user_id = :user_id AND is_read = 0
                     ORDER BY created_at DESC
@@ -58,20 +58,9 @@ final class Notification
             $limit = (int) $limit;
             $sql = "SELECT id, title, message, link, type, is_read, created_at
                     FROM notifications
-                    WHERE user_id = :user_id";
-            
-            // Filter berdasarkan type jika diminta
-            if ($typeFilter === 'reports') {
-                // Notifikasi terkait laporan: item_created, item_comment, new_claim, item_match
-                $sql .= " AND type IN ('item_created', 'item_comment', 'new_claim', 'item_match')";
-            } elseif ($typeFilter === 'claims') {
-                // Notifikasi terkait klaim: claim_verified, claim_rejected
-                $sql .= " AND type IN ('claim_verified', 'claim_rejected', 'new_claim')";
-            } elseif ($typeFilter === 'unread') {
-                $sql .= " AND is_read = 0";
-            }
-            
-            $sql .= " ORDER BY created_at DESC LIMIT " . $limit;
+                    WHERE user_id = :user_id
+                    ORDER BY created_at DESC
+                    LIMIT " . $limit;
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);

@@ -234,18 +234,16 @@ final class ItemController
             return;
         }
 
-        // Notifikasi 1: Konfirmasi laporan berhasil dibuat
-        $typeLabel = $type === 'lost' ? 'kehilangan' : 'penemuan';
-        $this->notificationModel->create(
+        // Buat notifikasi laporan baru
+        require_once __DIR__ . '/../models/Notification.php';
+        $notifModel = new Notification();
+        $notifModel->create(
             $_SESSION['user_id'],
-            '✅ Laporan Berhasil Dipublikasikan',
-            "Laporan {$typeLabel} \"{$title}\" telah berhasil dipublikasikan dan dapat dilihat oleh pengguna lain.",
-            "index.php?page=items&action=show&id={$itemId}",
+            'Laporan Dibuat',
+            'Laporan Anda "' . $title . '" berhasil dibuat.',
+            'index.php?page=items&action=show&id=' . $itemId,
             'item_created'
         );
-
-        // Notifikasi 2: Cek item matching dan beri notifikasi ke pemilik item yang cocok
-        $this->notifyMatchingItems($itemId, $type, $title, $categoryId, $locationId);
 
         flash('message', 'Laporan berhasil dibuat!', 'success');
         redirect('index.php?page=items&action=show&id=' . $itemId);
