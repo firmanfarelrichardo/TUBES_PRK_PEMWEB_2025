@@ -48,10 +48,12 @@ final class HomeController
         $baseUrl = $this->getBaseUrl();
         
         // --- DATA KHUSUS PETA BARU (Laporan Kehilangan untuk Marker Clustering) ---
-        // Asumsi ItemModel memiliki getAllForMap() yang bisa difilter
-        $lostReportsForMap = $this->itemModel->getAllForMap(['type' => 'lost', 'status' => 'open', 'limit' => 100]);
-        // Format ulang data agar hanya berisi informasi penting untuk marker JS
+        // Catatan: Fitur peta membutuhkan kolom latitude/longitude di tabel locations
+        // yang saat ini tidak ada. Mengembalikan array kosong untuk sementara.
         $lostReportsData = [];
+        
+        /* Uncomment setelah menambahkan kolom latitude/longitude ke tabel locations:
+        $lostReportsForMap = $this->itemModel->getAllForMap(['type' => 'lost', 'status' => 'open', 'limit' => 100]);
         foreach ($lostReportsForMap as $item) {
             if (!empty($item['latitude']) && !empty($item['longitude'])) {
                 $lostReportsData[] = [
@@ -64,6 +66,7 @@ final class HomeController
                 ];
             }
         }
+        */
         // --------------------------------------------------------------------------
         
         $data = [
@@ -341,8 +344,8 @@ final class HomeController
                 $hotspots[] = [
                     'id' => $location['id'],
                     'name' => $location['name'],
-                    'latitude' => $location['latitude'],
-                    'longitude' => $location['longitude'],
+                    'latitude' => $location['latitude'] ?? null,
+                    'longitude' => $location['longitude'] ?? null,
                     'location_type' => $location['location_type'] ?? 'building',
                     'report_count' => $totalCount,
                     'lost_count' => $this->itemModel->countAllFiltered([

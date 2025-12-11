@@ -47,13 +47,12 @@ final class Database
     }
     
     public static function getHotspots($days = 7) {
+        // Catatan: Fungsi ini membutuhkan kolom latitude/longitude yang tidak ada
+        // Mengembalikan hotspot locations tanpa koordinat
         $sql = "
             SELECT 
                 l.id,
                 l.name,
-                l.latitude,
-                l.longitude,
-                l.location_type,
                 COUNT(i.id) as report_count,
                 SUM(CASE WHEN i.type = 'lost' THEN 1 ELSE 0 END) as lost_count,
                 SUM(CASE WHEN i.type = 'found' THEN 1 ELSE 0 END) as found_count
@@ -61,10 +60,8 @@ final class Database
             LEFT JOIN items i ON l.id = i.location_id 
                 AND i.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
                 AND i.deleted_at IS NULL
-            WHERE l.deleted_at IS NULL 
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL
-            GROUP BY l.id
+            WHERE l.deleted_at IS NULL
+            GROUP BY l.id, l.name
             HAVING report_count > 0
             ORDER BY report_count DESC
             LIMIT 10

@@ -1,5 +1,3 @@
--- Active: 1746180735798@@127.0.0.1@3306@mysql
--- Active: 1746180735798@@127.0.0.1@3306@myunila_lostfound
 DROP DATABASE IF EXISTS myunila_lostfound;
 CREATE DATABASE myunila_lostfound;
 USE myunila_lostfound;

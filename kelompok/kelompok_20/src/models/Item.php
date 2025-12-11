@@ -220,10 +220,7 @@ final class Item
                     u.name AS user_name,
                     u.avatar AS user_avatar,
                     c.name AS category_name,
-                    l.name AS location_name,
-                    l.latitude,
-                    l.longitude,
-                    l.location_type
+                    l.name AS location_name
                 FROM items i
                 LEFT JOIN users u ON i.user_id = u.id
                 LEFT JOIN categories c ON i.category_id = c.id
@@ -399,9 +396,15 @@ final class Item
      */
     public function getHotspotLocations(): array 
     {
-        $sql = "SELECT id, name, latitude, longitude, location_type 
-                FROM locations 
-                WHERE deleted_at IS NULL AND latitude IS NOT NULL AND longitude IS NOT NULL";
+        // Catatan: Fungsi ini membutuhkan kolom latitude/longitude yang tidak ada di tabel locations
+        // Mengembalikan daftar lokasi tanpa koordinat
+        $sql = "SELECT l.id, l.name, COUNT(i.id) as item_count
+                FROM locations l
+                LEFT JOIN items i ON l.id = i.location_id AND i.deleted_at IS NULL
+                WHERE l.deleted_at IS NULL
+                GROUP BY l.id, l.name
+                HAVING item_count > 0
+                ORDER BY item_count DESC";
         
         try {
             $stmt = $this->db->query($sql);
@@ -428,9 +431,6 @@ final class Item
                     u.avatar AS user_avatar,
                     c.name AS category_name,
                     l.name AS location_name,
-                    l.latitude,
-                    l.longitude,
-                    l.location_type,
                     -- Menambahkan security_answer_hash untuk keperluan verifikasi klaim
                     i.security_answer AS security_answer_hash 
                 FROM items i
@@ -459,9 +459,6 @@ final class Item
                     i.*,
                     c.name AS category_name,
                     l.name AS location_name,
-                    l.latitude,
-                    l.longitude,
-                    l.location_type,
                     (SELECT COUNT(*) FROM claims cl WHERE cl.item_id = i.id AND cl.deleted_at IS NULL) AS claims_count
                 FROM items i
                 JOIN categories c ON i.category_id = c.id
@@ -568,8 +565,6 @@ final class Item
                     u.avatar AS user_avatar,
                     c.name AS category_name,
                     l.name AS location_name,
-                    l.latitude,
-                    l.longitude,
                     CASE WHEN i.location_id = :target_location_id THEN 1 ELSE 0 END AS location_match
                 FROM items i
                 JOIN users u ON i.user_id = u.id
@@ -669,9 +664,6 @@ final class Item
                     i.category_id,
                     i.location_id,
                     l.name as location_name,
-                    l.latitude,
-                    l.longitude,
-                    l.location_type,
                     c.name as category_name,
                     u.name as reporter_name
                 FROM items i
@@ -679,9 +671,7 @@ final class Item
                 LEFT JOIN categories c ON i.category_id = c.id
                 LEFT JOIN users u ON i.user_id = u.id
                 WHERE i.status IN ('open', 'process')
-                AND i.deleted_at IS NULL
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL";
+                AND i.deleted_at IS NULL";
         
         $params = [];
         // Menggunakan filter dari buildFilterConditions (walaupun query berbeda, logikanya sama)
@@ -721,10 +711,6 @@ final class Item
         $sql = "SELECT 
                     l.id,
                     l.name,
-                    l.latitude,
-                    l.longitude,
-                    l.location_type,
-                    l.description as location_description,
                     COUNT(i.id) as report_count,
                     SUM(CASE WHEN i.type = 'lost' THEN 1 ELSE 0 END) as lost_count,
                     SUM(CASE WHEN i.type = 'found' THEN 1 ELSE 0 END) as found_count,
@@ -735,11 +721,9 @@ final class Item
                     AND i.deleted_at IS NULL
                     AND i.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
                 WHERE l.deleted_at IS NULL
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL
-                GROUP BY l.id, l.name, l.latitude, l.longitude, l.location_type, l.description
+                GROUP BY l.id, l.name
                 HAVING COUNT(i.id) > 0
-                ORDER BY lost_count DESC, report_count DESC, last_report_date DESC -- Urutkan berdasarkan lost_count
+                ORDER BY lost_count DESC, report_count DESC, last_report_date DESC
                 LIMIT :limit";
         
         try {
@@ -840,9 +824,7 @@ final class Item
                 FROM items i
                 LEFT JOIN locations l ON i.location_id = l.id
                 WHERE i.status IN ('open', 'process')
-                AND i.deleted_at IS NULL
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL";
+                AND i.deleted_at IS NULL";
         
         try {
             $stmt = $this->db->query($sql);
@@ -868,6 +850,8 @@ final class Item
         // Radius dalam meter
         $radiusM = $radiusKm * 1000;
         
+        // Catatan: Fungsi ini membutuhkan kolom latitude/longitude di tabel locations
+        // yang saat ini tidak ada. Mengembalikan items tanpa filter radius.
         $sql = "SELECT 
                     i.id, 
                     i.title, 
@@ -876,24 +860,12 @@ final class Item
                     i.created_at,
                     i.image_path,
                     l.name as location_name,
-                    l.latitude,
-                    l.longitude,
-                    c.name as category_name,
-                    (
-                        6371000 * acos(
-                            cos(radians(:lat)) * cos(radians(l.latitude)) *
-                            cos(radians(l.longitude) - radians(:lng)) +
-                            sin(radians(:lat)) * sin(radians(l.latitude))
-                        )
-                    ) as distance
+                    c.name as category_name
                 FROM items i
                 LEFT JOIN locations l ON i.location_id = l.id
                 LEFT JOIN categories c ON i.category_id = c.id
                 WHERE i.status IN ('open', 'process')
-                AND i.deleted_at IS NULL
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL
-                HAVING distance <= :radius";
+                AND i.deleted_at IS NULL";
         
         // Membangun filter tambahan
         if (!empty($filters['type'])) {
@@ -948,6 +920,12 @@ final class Item
     
     public function updateLocationCoordinates(int $locationId, float $latitude, float $longitude): bool
     {
+        // Fungsi ini disabled karena tabel locations tidak memiliki kolom latitude/longitude
+        // Untuk mengaktifkan, jalankan ALTER TABLE terlebih dahulu
+        error_log("updateLocationCoordinates: Function disabled - latitude/longitude columns not exist");
+        return false;
+        
+        /* Uncomment setelah menambahkan kolom ke database:
         $sql = "UPDATE locations 
                 SET latitude = :latitude, longitude = :longitude, updated_at = NOW()
                 WHERE id = :id AND deleted_at IS NULL";
@@ -959,11 +937,11 @@ final class Item
                 'latitude' => $latitude,
                 'longitude' => $longitude
             ]);
-            
         } catch (PDOException $e) {
             error_log("PDO Error on updateLocationCoordinates: " . $e->getMessage());
             return false;
         }
+        */
     }
     
     public function getNearestItems(float $lat, float $lng, int $limit = 10): array
@@ -973,45 +951,33 @@ final class Item
     
     public function getMapDashboardStats(): array
     {
+        // Catatan: Fungsi ini membutuhkan kolom latitude/longitude yang saat ini tidak ada
+        // Mengembalikan statistik tanpa kalkulasi jarak
         $sql = "SELECT 
                     COUNT(DISTINCT l.id) as total_locations,
                     COUNT(i.id) as total_items,
                     SUM(CASE WHEN i.type = 'lost' THEN 1 ELSE 0 END) as lost_items,
                     SUM(CASE WHEN i.type = 'found' THEN 1 ELSE 0 END) as found_items,
                     SUM(CASE WHEN i.status = 'open' THEN 1 ELSE 0 END) as open_items,
-                    SUM(CASE WHEN i.status = 'closed' THEN 1 ELSE 0 END) as closed_items,
-                    AVG(
-                        6371000 * acos(
-                            cos(radians(l.latitude)) * cos(radians(:center_lat)) *
-                            cos(radians(l.longitude) - radians(:center_lng)) +
-                            sin(radians(l.latitude)) * sin(radians(:center_lat))
-                        )
-                    ) as avg_distance_from_center
+                    SUM(CASE WHEN i.status = 'closed' THEN 1 ELSE 0 END) as closed_items
                 FROM items i
                 LEFT JOIN locations l ON i.location_id = l.id
-                WHERE i.deleted_at IS NULL
-                AND l.latitude IS NOT NULL 
-                AND l.longitude IS NOT NULL";
+                WHERE i.deleted_at IS NULL";
         
         try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([
-                'center_lat' => -5.3630, // Pusat UNILA
-                'center_lng' => 105.2440
-            ]);
-            
+            $stmt = $this->db->query($sql);
             $stats = $stmt->fetch(PDO::FETCH_ASSOC);
             
             return $stats ?: [
                 'total_locations' => 0, 'total_items' => 0, 'lost_items' => 0, 'found_items' => 0, 
-                'open_items' => 0, 'closed_items' => 0, 'avg_distance_from_center' => 0
+                'open_items' => 0, 'closed_items' => 0
             ];
             
         } catch (PDOException $e) {
             error_log("PDO Error on getMapDashboardStats: " . $e->getMessage());
             return [
                 'total_locations' => 0, 'total_items' => 0, 'lost_items' => 0, 'found_items' => 0, 
-                'open_items' => 0, 'closed_items' => 0, 'avg_distance_from_center' => 0
+                'open_items' => 0, 'closed_items' => 0
             ];
         }
     }

@@ -254,6 +254,22 @@ if (!function_exists('itemStatusToBadge')) {
                                     <span class="absolute top-2 right-2 px-3 py-1 <?= $tag_color ?> text-white text-xs font-bold rounded-full shadow-md">
                                         <?= $tag_label ?>
                                     </span>
+                                </div>
+                                
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-white mb-2 line-clamp-1"><?= htmlspecialchars($item['title']) ?></h3>
+                                    <p class="text-xs text-slate-400">Dilaporkan <?= timeAgo($item['created_at']) ?></p>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="col-span-3 text-center text-slate-400">Belum ada laporan barang terbaru.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+
 <section class="py-20 bg-white dark:bg-slate-800/50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
@@ -374,8 +390,10 @@ if (!function_exists('itemStatusToBadge')) {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
-                                
-                                <div class="p-4">
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="p-4">
                                     <h3 class="font-semibold text-lg text-white line-clamp-1 group-hover:text-primary-400 transition"><?= htmlspecialchars($item['title']) ?></h3>
                                     <div class="flex items-center text-xs text-slate-500 mt-1">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -386,20 +404,20 @@ if (!function_exists('itemStatusToBadge')) {
                                         Dilaporkan <?= timeAgo($item['created_at']) ?>
                                     </p>
                                     
-                                    <a href="<?= base_url('index.php?page=items&action=show&id=' . $item['id']) ?>" 
-                                        class="mt-3 inline-flex items-center text-primary-400 text-sm font-bold hover:text-white transition-colors">
-                                        Lihat Detail →
-                                    </a>
-                                </div>
-                            </article>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="col-span-3 bg-slate-800 rounded-xl p-8 text-center border border-slate-700">
-                            <p class="text-gray-400">Belum ada laporan barang terbaru.</p>
+                            <a href="<?= base_url('index.php?page=items&action=show&id=' . $item['id']) ?>" 
+                                class="mt-3 inline-flex items-center text-primary-400 text-sm font-bold hover:text-white transition-colors">
+                                Lihat Detail →
+                            </a>
                         </div>
-                    <?php endif; ?>
+                    </article>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-span-3 bg-slate-800 rounded-xl p-8 text-center border border-slate-700">
+                    <p class="text-gray-400">Belum ada laporan barang terbaru.</p>
                 </div>
+            <?php endif; ?>
             </div>
+        </div>
 
             <div class="lg:col-span-1 space-y-8">
                 
@@ -594,3 +612,5 @@ if (!function_exists('itemStatusToBadge')) {
         </div>
     </div>
 </section>
+
+</div>
