@@ -20,7 +20,8 @@ const CONFIG = {
     updateInterval: 30000,
     mapHeight: {
         desktop: '550px',
-        mobile: '400px'
+        tablet: '500px',
+        mobile: '300px'
     }
 };
 
@@ -646,10 +647,20 @@ function adjustMapHeight() {
     const mapElement = document.getElementById('unila-hotspot-map');
     if (!mapElement) return;
     
-    const isMobile = window.innerWidth < 768;
-    mapElement.style.height = isMobile ? CONFIG.mapHeight.mobile : CONFIG.mapHeight.desktop;
+    const width = window.innerWidth;
+    let height;
     
-    console.log(`📏 Adjusted map height: ${isMobile ? 'mobile' : 'desktop'} (${mapElement.style.height})`);
+    if (width < 768) {
+        height = CONFIG.mapHeight.mobile;
+    } else if (width < 1024) {
+        height = CONFIG.mapHeight.tablet;
+    } else {
+        height = CONFIG.mapHeight.desktop;
+    }
+    
+    mapElement.style.height = height;
+    
+    console.log(`📏 Adjusted map height: ${width < 768 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop'} (${height})`);
     
     if (window.mapInstance) {
         setTimeout(() => {

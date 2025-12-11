@@ -56,10 +56,10 @@ $current_page = $_GET['page'] ?? 'home';
 ?>
 
 <nav class="glass sticky top-0 z-40 border-b border-slate-200/50 dark:border-slate-700/50">
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div class="flex justify-between items-center h-16">
             <a href="<?= base_url('index.php') ?>" class="flex items-center gap-3 group">
-                <img src="<?= base_url('assets/images/iconlost&found.png') ?>" alt="Logo" class="w-10 h-10 rounded-xl shadow-lg shadow-primary-500/20 group-hover:shadow-primary-500/40 group-hover:scale-105 transition-all">
+                <img src="<?= base_url('src/assets/images/iconlost&found.png') ?>" alt="Logo" class="w-10 h-10 rounded-xl shadow-lg shadow-primary-500/20 group-hover:shadow-primary-500/40 group-hover:scale-105 transition-all">
                 <div>
                     <span class="font-bold text-lg text-slate-900 dark:text-white">myUnila</span>
                     <span class="font-semibold text-lg gradient-text ml-1">Lost & Found</span>
@@ -118,29 +118,29 @@ $current_page = $_GET['page'] ?? 'home';
                     ?>
                     
                     <?php $active_notif = is_active('notifications'); ?>
-                    <a href="<?= base_url('index.php?page=notifications') ?>" class="relative p-2 ml-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all <?= $active_notif ? 'text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
+                    <a href="<?= base_url('index.php?page=notifications') ?>" class="relative p-2 ml-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group <?= $active_notif ? 'text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>" title="Notifikasi">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
                         <?php if ($unread_count > 0): ?>
-                            <span class="absolute top-1 right-1 w-5 h-5 bg-gradient-to-r from-rose-500 to-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50 animate-pulse">
+                            <span class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 bg-gradient-to-r from-rose-500 to-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50 animate-pulse ring-2 ring-white dark:ring-slate-800">
                                 <?= $unread_count > 9 ? '9+' : $unread_count ?>
                             </span>
                         <?php endif; ?>
                     </a>
                     
                     <div class="relative group ml-2">
-                        <button class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-                            <div class="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+                        <button class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all" title="Menu Pengguna">
+                            <div class="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center shadow-md">
                                 <span class="text-white font-semibold text-sm"><?= strtoupper(substr(currentUser()['name'], 0, 1)) ?></span>
                             </div>
-                            <span class="font-medium text-sm text-slate-700 dark:text-slate-200"><?= currentUser()['name'] ?></span>
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="hidden md:block font-medium text-sm text-slate-700 dark:text-slate-200"><?= currentUser()['name'] ?></span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         
-                        <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 hidden group-hover:block">
+                        <div class="absolute right-0 mt-2 w-56 glass-card rounded-2xl shadow-xl bento-shadow py-2 hidden group-hover:block animate-fade-in">
                             <?php $active_profile = is_active('profile'); ?>
                             <a href="<?= base_url('index.php?page=profile') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_profile ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                 <svg class="w-5 h-5 <?= $active_profile ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,15 +184,18 @@ $current_page = $_GET['page'] ?? 'home';
                 <?php endif; ?>
             </div>
             
-            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                <svg class="w-6 h-6 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95" aria-label="Toggle Menu">
+                <svg id="hamburger-icon" class="w-6 h-6 text-slate-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                <svg id="close-icon" class="w-6 h-6 text-slate-700 dark:text-slate-200 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         
-        <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-slate-200 dark:border-slate-700 mt-2 pt-4">
-            <div class="flex flex-col gap-1">
+        <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-slate-200 dark:border-slate-700 mt-2 pt-4 animate-fade-in">
+            <div class="flex flex-col gap-1.5">
                 <?php
                 // Deklarasi variabel aktif untuk menu mobile. 
                 // Beberapa sudah diambil di blok desktop jika isLoggedIn() true.
@@ -251,6 +254,19 @@ $current_page = $_GET['page'] ?? 'home';
 
 <script>
 document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const closeIcon = document.getElementById('close-icon');
+    
+    mobileMenu.classList.toggle('hidden');
+    
+    // Toggle icons
+    if (mobileMenu.classList.contains('hidden')) {
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+    } else {
+        hamburgerIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+    }
 });
 </script>

@@ -593,7 +593,7 @@ final class ItemController
         // Asumsi fungsi global isAdmin() dimuat
         return $isOwner || isAdmin();
     }
-}
+
 
     /**
      * Mencari item yang cocok dan memberi notifikasi ke pemilik item tersebut
@@ -639,4 +639,5 @@ final class ItemController
             $notifiedUsers[] = $matchOwnerId;
         }
     }
+
 }

@@ -14,7 +14,7 @@ setupPasswordResetsTable();
 
 $page = $_GET['page'] ?? 'home';
 $action = $_GET['action'] ?? 'index';
-$isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST';
+$isPostRequest = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
 
 $page = preg_replace('/[^a-zA-Z0-9_-]/', '', $page);
 $action = preg_replace('/[^a-zA-Z0-9_-]/', '', $action);

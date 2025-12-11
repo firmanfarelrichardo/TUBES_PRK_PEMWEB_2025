@@ -7,9 +7,9 @@
     <meta name="description" content="Sistem Manajemen Kehilangan dan Penemuan Barang Universitas Lampung">
     <title><?php echo $pageTitle ?? 'myUnila Lost & Found'; ?></title>
     
-    <link rel="icon" type="image/svg+xml" href="<?php echo base_url('favicon.svg'); ?>">
-    <link rel="icon" type="image/png" href="<?php echo base_url('assets/images/iconlost&found.png'); ?>">
-    <link rel="apple-touch-icon" href="<?php echo base_url('assets/images/iconlost&found.png'); ?>">
+    <link rel="icon" type="image/svg+xml" href="<?php echo base_url('src/assets/images/iconlost&found.png'); ?>">
+    <link rel="icon" type="image/png" href="<?php echo base_url('src/assets/images/iconlost&found.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo base_url('src/assets/images/iconlost&found.png'); ?>">
     
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,10 +17,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- ✅ LEAFLET CSS (TAMBAHKAN DI SINI) -->
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- ✅ SELESAI -->
 
     <script>
         tailwind.config = {
@@ -48,6 +47,7 @@
                     animation: {
                         'float': 'float 3s ease-in-out infinite',
                         'glow': 'glow 2s ease-in-out infinite alternate',
+                        'fade-in': 'fade-in 0.5s ease-out',
                     },
                     keyframes: {
                         float: {
@@ -57,6 +57,10 @@
                         glow: {
                             '0%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' },
                             '100%': { boxShadow: '0 0 30px rgba(6, 182, 212, 0.6)' },
+                        },
+                        'fade-in': {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         }
                     }
                 }
@@ -78,18 +82,71 @@
     
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .dark .glass { background: rgba(30, 41, 59, 0.8); }
-        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .dark .glass-card { background: rgba(51, 65, 85, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .gradient-text { background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; padding-bottom: 0.1em; }
-        .gradient-primary { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%); }
-        .gradient-mesh { background: radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.15) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(14, 165, 233, 0.1) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(6, 182, 212, 0.1) 0px, transparent 50%); }
-        .dark .gradient-mesh { background: radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.2) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%); }
-        .bento-shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.05); }
-        .dark .bento-shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3); }
         
-        /* ✅ STYLE UNTUK PETA LEAFLET */
+        /* Glassmorphism Styles */
+        .glass { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+        }
+        .dark .glass { 
+            background: rgba(30, 41, 59, 0.8); 
+        }
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+        .dark .glass-card { 
+            background: rgba(51, 65, 85, 0.5); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        /* Gradient Utilities */
+        .gradient-text { 
+            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #3b82f6 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            display: inline-block; 
+        
+        /* Custom Select Styling */
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+            padding-bottom: 0.1em; 
+        }
+        
+        .gradient-primary { 
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%); 
+        }
+        
+        .gradient-mesh { 
+            background: 
+                radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.15) 0px, transparent 50%), 
+                radial-gradient(at 80% 0%, rgba(14, 165, 233, 0.1) 0px, transparent 50%), 
+                radial-gradient(at 0% 50%, rgba(6, 182, 212, 0.1) 0px, transparent 50%); 
+        }
+        .dark .gradient-mesh { 
+            background: 
+                radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.2) 0px, transparent 50%), 
+                radial-gradient(at 80% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%); 
+        }
+        
+        .bento-shadow { 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.05); 
+        }
+        .dark .bento-shadow { 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3); 
+        }
+        
+        /* Leaflet Dark Mode Styling */
         .leaflet-container {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
@@ -130,7 +187,7 @@
                     <?php endif; ?>
                     <span class="font-medium"><?php echo $flash['message']; ?></span>
                 </div>
-                <button onclick="this.parentElement.remove()" class="text-current opacity-70 hover:opacity-100 transition">
+                <button onclick="this.parentElement.remove()" class="text-current opacity-70 hover:opacity-100 transition ml-4">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
@@ -143,19 +200,19 @@
         <?php echo $content ?? ''; ?>
     </main>
     
-    <footer class="bg-white dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/50 mt-auto">
-        <div class="container mx-auto px-4 py-12">
+    <footer class="glass border-t border-slate-200/50 dark:border-slate-700/50 mt-auto">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
-                        <img src="<?php echo base_url('assets/images/iconlost&found.png'); ?>" alt="Logo" class="w-12 h-12 rounded-xl shadow-lg">
+                        <img src="<?php echo base_url('src/assets/images/iconlost&found.png'); ?>" alt="Logo" class="w-12 h-12 rounded-xl shadow-lg shadow-primary-500/20">
                         <div>
                             <h3 class="font-bold text-lg text-slate-900 dark:text-white">myUnila Lost & Found</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Universitas Lampung</p>
                         </div>
                     </div>
                     <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
-                        Platform digital untuk membantu civitas akademika Universitas Lampung dalam melaporkan dan menemukan barang hilang.
+                        Platform digital untuk membantu civitas akademika Universitas Lampung dalam melaporkan dan menemukan barang hilang dengan mudah, cepat, dan aman.
                     </p>
                 </div>
                 
@@ -189,9 +246,10 @@
         </div>
     </footer>
     
-    <!-- ✅ JAVASCRIPT UNTUK PETA (DIPINDAHKAN KE BAGIAN INI) -->
+    <!-- Map JavaScript -->
     <script src="<?php echo base_url('src/assets/js/map.js') . '?v=' . time(); ?>"></script>
     
+    <!-- Theme Toggle Button -->
     <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl gradient-primary text-white shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center group">
         <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -218,8 +276,7 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateIcon();
-            
-            // ✅ Panggil fungsi untuk memperbarui peta saat tema berubah
+            Refresh map on theme change
             if (typeof window.forceMapInvalidate === 'function') {
                 setTimeout(() => {
                     window.forceMapInvalidate();
@@ -227,24 +284,24 @@
             }
         });
         
-        // ✅ Fix untuk peta: Panggil setelah halaman selesai load
+        // Fix map size on page load
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 if (typeof window.forceMapInvalidate === 'function') {
                     window.forceMapInvalidate();
                 }
             }, 1000);
-            
-            // ✅ Fix ukuran peta saat halaman selesai loading
-            window.addEventListener('load', function() {
-                if (typeof window.forceMapInvalidate === 'function') {
-                    setTimeout(() => {
-                        window.forceMapInvalidate();
-                    }, 500);
-                }
-            });
         });
         
+        window.addEventListener('load', function() {
+            if (typeof window.forceMapInvalidate === 'function') {
+                setTimeout(() => {
+                    window.forceMapInvalidate();
+                }, 500);
+            }
+        });
+        
+        // Fix map size on window 
         // ✅ Fix ukuran peta saat window di-resize
         window.addEventListener('resize', function() {
             if (typeof window.forceMapInvalidate === 'function') {

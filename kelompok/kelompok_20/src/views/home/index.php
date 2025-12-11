@@ -42,53 +42,13 @@ if (!function_exists('itemStatusToBadge')) {
 }
 ?>
 
-<div class="bg-slate-900 text-white min-h-screen">
-
-    <section class="gradient-mesh min-h-[85vh] flex items-center relative">
-        <div class="absolute inset-0 opacity-40 overflow-hidden">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-sky-400/20 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div class="container mx-auto px-4 py-20 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-900/30 text-primary-300 text-sm font-medium mb-6 animate-fade-in">
-                    <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-                    Platform Resmi Universitas Lampung
-                </div>
-                
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-8 leading-tight md:leading-relaxed">
-                    Temukan Barang Hilang
-                    <span class="gradient-text block">di Kampus</span>
-                </h1>
-                
-                <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                    Platform digital untuk membantu civitas akademika Universitas Lampung dalam melaporkan dan menemukan barang hilang dengan mudah, cepat, dan aman.
-                </p>
-                
-                <form action="<?= base_url('index.php?page=items') ?>" method="GET" class="max-w-2xl mx-auto mb-8">
-                    <input type="hidden" name="page" value="items">
-                    <input type="hidden" name="action" value="search">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </div>
-                        <input 
-                            type="text" 
-                            name="query" 
-                            placeholder="Cari barang hilang atau ditemukan..." 
-                            class="w-full pl-16 pr-6 py-5 text-lg bg-slate-800 border-2 border-slate-700 rounded-2xl focus:outline-none focus:border-primary-500 text-white placeholder-slate-400 shadow-lg transition-all"
-                        >
 <section class="gradient-mesh min-h-[85vh] flex items-center relative">
     <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-sky-400/20 rounded-full blur-3xl"></div>
     </div>
     
-    <div class="container mx-auto px-4 py-20 relative z-10">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10 max-w-7xl">
         <div class="max-w-4xl mx-auto text-center">
             
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-6 animate-fade-in">
@@ -96,17 +56,14 @@ if (!function_exists('itemStatusToBadge')) {
                 Platform Resmi Universitas Lampung
             </div>
             
-            
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-white mb-8 leading-relaxed">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-white mb-8 leading-tight">
                 Temukan Barang Hilang
                 <span class="gradient-text block">di Kampus</span>
             </h1>
             
-            
             <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
                 Platform digital untuk membantu civitas akademika Universitas Lampung dalam melaporkan dan menemukan barang hilang dengan mudah, cepat, dan aman.
             </p>
-            
             
             <form action="<?= base_url('index.php?page=items') ?>" method="GET" class="max-w-2xl mx-auto mb-8">
                 <input type="hidden" name="page" value="items">
@@ -116,84 +73,95 @@ if (!function_exists('itemStatusToBadge')) {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                </form>
-                
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="<?= base_url('index.php?page=items&action=create_lost') ?>" class="inline-flex items-center justify-center gap-2 px-8 py-4 gradient-primary text-white rounded-2xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:-translate-y-1 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        Laporkan Kehilangan
-                    </a>
-                    <a href="<?= base_url('index.php?page=items') ?>" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-800 text-slate-200 rounded-2xl font-semibold border-2 border-slate-700 hover:border-primary-500 hover:text-primary-400 hover:-translate-y-1 transition-all shadow-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        Cari Barang
-                    </a>
+                    <input 
+                        type="text" 
+                        name="query" 
+                        placeholder="Cari barang hilang atau ditemukan..." 
+                        class="w-full pl-16 pr-6 py-5 text-lg bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-slate-900 dark:text-white placeholder-slate-400 shadow-lg hover:shadow-xl transition-all"
+                    >
                 </div>
+                <button type="submit" class="mt-4 w-full sm:w-auto px-8 py-3.5 gradient-primary text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all">
+                    Cari Sekarang
+                </button>
+            </form>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="<?= base_url('index.php?page=items&action=create_lost') ?>" class="inline-flex items-center justify-center gap-2 px-8 py-4 gradient-primary text-white rounded-2xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:-translate-y-1 transition-all w-full sm:w-auto">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Laporkan Kehilangan
+                </a>
+                <a href="<?= base_url('index.php?page=items') ?>" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-2xl font-semibold border-2 border-slate-200 dark:border-slate-700 hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:-translate-y-1 transition-all shadow-md w-full sm:w-auto">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Cari Barang
+                </a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="py-12 bg-slate-800 border-y border-slate-700/50">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section class="py-12 bg-white dark:bg-slate-800 border-y border-slate-200 dark:border-slate-700/50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 
-                <div class="text-center p-6 bg-slate-900 rounded-xl shadow-xl border border-slate-700 group hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-red-600/20 rounded-2xl flex items-center justify-center shadow-lg text-red-500">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <div class="text-center p-6 glass-card rounded-2xl bento-shadow group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
-                    <h3 class="text-4xl font-bold text-white mb-1">
+                    <h3 class="text-4xl font-bold text-slate-900 dark:text-white mb-1">
                         <?= number_format($stats['total_lost'] ?? 0) ?>
                     </h3>
-                    <p class="text-red-400 font-medium">Laporan Hilang Aktif</p>
+                    <p class="text-red-600 dark:text-red-400 font-medium">Laporan Hilang Aktif</p>
                 </div>
                 
-                <div class="text-center p-6 bg-slate-900 rounded-xl shadow-xl border border-slate-700 group hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-green-600/20 rounded-2xl flex items-center justify-center shadow-lg text-green-400">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="text-center p-6 glass-card rounded-2xl bento-shadow group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <h3 class="text-4xl font-bold text-white mb-1">
+                    <h3 class="text-4xl font-bold text-slate-900 dark:text-white mb-1">
                         <?= number_format($stats['total_found'] ?? 0) ?>
                     </h3>
-                    <p class="text-green-400 font-medium">Laporan Ditemukan</p>
+                    <p class="text-green-600 dark:text-green-400 font-medium">Laporan Ditemukan</p>
                 </div>
                 
-                <div class="text-center p-6 bg-slate-900 rounded-xl shadow-xl border border-slate-700 group hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-600/20 rounded-2xl flex items-center justify-center shadow-lg text-primary-400">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <div class="text-center p-6 glass-card rounded-2xl bento-shadow group hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     </div>
-                    <h3 class="text-4xl font-bold text-white mb-1">
+                    <h3 class="text-4xl font-bold text-slate-900 dark:text-white mb-1">
                         <?= number_format($stats['total_returned'] ?? 0) ?>
                     </h3>
-                    <p class="text-primary-400 font-medium">Berhasil Dikembalikan</p>
+                    <p class="text-cyan-600 dark:text-cyan-400 font-medium">Berhasil Dikembalikan</p>
                 </div>
             </div>
         </div>
     </section>
     
-    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-900">
+    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900">
         <div class="container mx-auto max-w-7xl">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div class="mb-4 md:mb-0">
-                    <h2 class="text-3xl font-bold text-white mb-2 border-l-4 border-primary-500 pl-3">
-                        📍 Peta Hotspot Kehilangan
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                        <span class="text-primary-500">📍</span>
+                        Peta Hotspot Kehilangan
                     </h2>
-                    <p class="text-slate-400">
+                    <p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">
                         Analisis lokasi dengan laporan hilang aktif terbanyak dalam 30 hari terakhir.
                     </p>
                 </div>
-                <span class="text-sm text-slate-500">Data real-time: <span id="map-timestamp">Loading...</span></span>
+                <span class="text-sm text-slate-500 dark:text-slate-400">Data real-time: <span id="map-timestamp" class="font-semibold text-primary-500">Loading...</span></span>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 
-                <div class="lg:col-span-3 bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-                    <div id="unila-hotspot-map" class="w-full" style="height: 550px;"></div> 
+                <div class="lg:col-span-3 glass-card rounded-2xl overflow-hidden bento-shadow">
+                    <div id="unila-hotspot-map" class="w-full h-[300px] md:h-[500px] lg:h-[550px]"></div> 
                 </div>
                 
-                <div class="lg:col-span-1 space-y-6">
+                <div class="lg:col-span-1 space-y-4">
                     
-                    <div class="bg-slate-800 rounded-xl p-5 shadow-lg border border-slate-700">
-                        <h4 class="font-semibold text-white mb-4">Legenda Hotspot</h4>
-                        <div class="space-y-3 text-sm text-slate-400">
+                    <div class="glass-card rounded-xl p-5 bento-shadow">
+                        <h4 class="font-semibold text-slate-900 dark:text-white mb-4">Legenda Hotspot</h4>
+                        <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
                             <div class="flex items-center gap-3"><div class="w-4 h-4 bg-red-500 rounded-full"></div><p>Hotspot Tinggi (> 10 Laporan)</p></div>
                             <div class="flex items-center gap-3"><div class="w-4 h-4 bg-amber-500 rounded-full"></div><p>Hotspot Sedang (5 - 9 Laporan)</p></div>
                             <div class="flex items-center gap-3"><div class="w-4 h-4 bg-blue-500 rounded-full"></div><p>Hotspot Rendah (3 - 4 Laporan)</p></div>
@@ -201,15 +169,15 @@ if (!function_exists('itemStatusToBadge')) {
                         </div>
                     </div>
                     
-                    <div class="bg-slate-800 rounded-xl p-5 shadow-lg border border-slate-700">
-                        <h4 class="font-semibold text-white mb-4">Top Lokasi Aktif</h4>
-                        <div class="space-y-3">
+                    <div class="glass-card rounded-xl p-5 bento-shadow">
+                        <h4 class="font-semibold text-slate-900 dark:text-white mb-4">Top Lokasi Aktif</h4>
+                        <div class="space-y-2">
                             <?php if (!empty($topLocations)): ?>
                                 <?php foreach (array_slice($topLocations, 0, 5) as $location): ?>
                                     <a href="<?= base_url('index.php?page=items&action=search&location=' . urlencode($location['name'])) ?>"
-                                       class="flex items-center justify-between p-3 bg-slate-900 rounded-lg hover:bg-slate-700 transition-colors">
-                                        <span class="font-medium text-sm text-white"><?= htmlspecialchars($location['name']) ?></span>
-                                        <span class="text-xs px-2 py-1 bg-red-600/30 text-red-300 rounded-full"><?= $location['report_count'] ?> Laporan</span>
+                                       class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all group">
+                                        <span class="font-medium text-sm text-slate-900 dark:text-white truncate pr-2"><?= htmlspecialchars($location['name']) ?></span>
+                                        <span class="text-xs px-2 py-1 bg-red-100 dark:bg-red-600/30 text-red-700 dark:text-red-300 rounded-full font-semibold whitespace-nowrap"><?= $location['report_count'] ?> Laporan</span>
                                     </a>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -222,22 +190,25 @@ if (!function_exists('itemStatusToBadge')) {
         </div>
     </section>
 
-    <section class="px-4 sm:px-6 lg:px-8 pt-8 pb-16 bg-slate-900">
+    <section class="px-4 sm:px-6 lg:px-8 pt-12 pb-16 bg-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <div class="lg:col-span-2">
-                <h2 class="text-2xl font-bold text-white mb-6 border-l-4 border-primary-500 pl-4">Laporan Terbaru Aktif</h2>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                    <span class="w-1 h-8 bg-primary-500 rounded-full"></span>
+                    Laporan Terbaru Aktif
+                </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                     <?php 
                     $recentItemsForDisplay = array_slice($recentItems, 0, 6);
                     ?>
 
                     <?php if (!empty($recentItemsForDisplay)): ?>
                         <?php foreach ($recentItemsForDisplay as $item): ?>
-                            <article class="bg-slate-800 rounded-xl overflow-hidden shadow-xl border border-slate-700 transition-all duration-300 group hover:shadow-primary-500/20 hover:scale-[1.01]">
+                            <article class="glass-card rounded-xl overflow-hidden bento-shadow transition-all duration-300 group hover:shadow-lg hover:-translate-y-1">
                                 
-                                <div class="relative w-full h-40 bg-slate-700 overflow-hidden">
+                                <div class="relative w-full h-40 bg-slate-200 dark:bg-slate-700 overflow-hidden">
                                     <?php if (!empty($item['image_path'])): ?>
                                         <img src="<?= base_url($item['image_path']) ?>" 
                                             alt="<?= htmlspecialchars($item['title']) ?>" 
@@ -248,17 +219,20 @@ if (!function_exists('itemStatusToBadge')) {
                                     
                                     <?php 
                                     $is_found = $item['type'] === 'found';
-                                    $tag_color = $is_found ? 'bg-primary-600' : 'bg-red-600'; 
+                                    $tag_color = $is_found ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-rose-600'; 
                                     $tag_label = $is_found ? 'DITEMUKAN' : 'HILANG';
                                     ?>
-                                    <span class="absolute top-2 right-2 px-3 py-1 <?= $tag_color ?> text-white text-xs font-bold rounded-full shadow-md">
+                                    <span class="absolute top-2 right-2 px-3 py-1 <?= $tag_color ?> text-white text-xs font-bold rounded-full shadow-lg backdrop-blur-sm">
                                         <?= $tag_label ?>
                                     </span>
                                 </div>
                                 
                                 <div class="p-4">
-                                    <h3 class="font-semibold text-white mb-2 line-clamp-1"><?= htmlspecialchars($item['title']) ?></h3>
-                                    <p class="text-xs text-slate-400">Dilaporkan <?= timeAgo($item['created_at']) ?></p>
+                                    <h3 class="font-semibold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"><?= htmlspecialchars($item['title']) ?></h3>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span><?= timeAgo($item['created_at']) ?></span>
+                                    </div>
                                 </div>
                             </article>
                         <?php endforeach; ?>
@@ -610,7 +584,4 @@ if (!function_exists('itemStatusToBadge')) {
             </div>
             
         </div>
-    </div>
-</section>
-
-</div>
+    </section>

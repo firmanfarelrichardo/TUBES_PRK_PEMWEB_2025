@@ -7,27 +7,32 @@ $isLost = $itemType === 'lost';
 $isFound = $itemType === 'found';
 ?>
 
-<div class="min-h-screen gradient-mesh py-12 px-4">
-    <div class="container mx-auto max-w-3xl">
+<div class="min-h-screen gradient-mesh py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto max-w-4xl">
         
         <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Formulir Laporan
+            </div>
             <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
                 Buat Laporan <?= $isLost ? 'Kehilangan' : ($isFound ? 'Temuan' : 'Baru') ?>
             </h1>
-            <p class="text-slate-600 dark:text-slate-400">
+            <p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">
                 Lengkapi detail barang untuk membantu sesama civitas Unila.
             </p>
         </div>
 
         <?php $flash = flash('message'); ?>
         <?php if ($flash): ?>
-            <div role="alert" class="bg-rose-500/10 border border-rose-500 text-rose-300 rounded-xl p-4 mb-6">
-                <p><?= $flash['message'] ?></p>
+            <div role="alert" class="bg-rose-50 dark:bg-rose-500/10 border-l-4 border-rose-500 text-rose-800 dark:text-rose-300 rounded-xl p-4 mb-6 flex items-center gap-3 animate-fade-in">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                <p class="font-medium"><?= $flash['message'] ?></p>
             </div>
         <?php endif; ?>
 
         
-        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-6 md:p-8">
+        <div class="glass-card rounded-2xl bento-shadow p-6 md:p-8">
             <form 
                 action="<?= base_url('index.php?page=items&action=store') ?>" 
                 method="POST" 
@@ -37,7 +42,10 @@ $isFound = $itemType === 'found';
                 
                 <div>
                     <label for="title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                        Judul Barang <span class="text-rose-500">*</span>
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                            Judul Barang <span class="text-rose-500">*</span>
+                        </span>
                     </label>
                     <input 
                         type="text" 
@@ -45,7 +53,7 @@ $isFound = $itemType === 'found';
                         name="title" 
                         required
                         placeholder="Contoh: Dompet Kulit Coklat, Kunci Motor Honda, dll"
-                        class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        class="w-full px-4 py-3.5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all hover:border-slate-300 dark:hover:border-slate-500"
                         value="<?= clean($_POST['title'] ?? '') ?>"
                     >
                 </div>
@@ -53,7 +61,10 @@ $isFound = $itemType === 'found';
                 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                        Jenis Laporan <span class="text-rose-500">*</span>
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                            Jenis Laporan <span class="text-rose-500">*</span>
+                        </span>
                     </label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
@@ -67,10 +78,10 @@ $isFound = $itemType === 'found';
                                 <?= $isLost ? 'checked' : '' ?>
                                 onchange="updateRequiredFields('lost')"
                             >
-                            <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/30 peer-checked:shadow-lg peer-checked:shadow-rose-500/20 hover:border-rose-300 dark:hover:border-rose-700">
+                            <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-rose-500 peer-checked:bg-gradient-to-br peer-checked:from-rose-50 peer-checked:to-red-50 dark:peer-checked:from-rose-950/30 dark:peer-checked:to-red-950/20 peer-checked:shadow-lg peer-checked:shadow-rose-500/20 hover:border-rose-300 dark:hover:border-rose-700 hover:shadow-md">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <div class="w-12 h-12 bg-rose-100 dark:bg-rose-900/50 rounded-xl flex items-center justify-center peer-checked:bg-rose-500 transition-colors">
-                                        <svg class="w-6 h-6 text-rose-600 dark:text-rose-400 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-14 h-14 bg-rose-100 dark:bg-rose-900/50 rounded-xl flex items-center justify-center peer-checked:bg-gradient-to-br peer-checked:from-rose-500 peer-checked:to-red-600 transition-all shadow-md peer-checked:shadow-rose-500/50">
+                                        <svg class="w-7 h-7 text-rose-600 dark:text-rose-400 peer-checked:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
                                     </div>
@@ -93,10 +104,10 @@ $isFound = $itemType === 'found';
                                 <?= $isFound ? 'checked' : '' ?>
                                 onchange="updateRequiredFields('found')"
                             >
-                            <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-teal-500 peer-checked:bg-teal-50 dark:peer-checked:bg-teal-950/30 peer-checked:shadow-lg peer-checked:shadow-teal-500/20 hover:border-teal-300 dark:hover:border-teal-700">
+                            <div class="p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl transition-all peer-checked:border-emerald-500 peer-checked:bg-gradient-to-br peer-checked:from-emerald-50 peer-checked:to-teal-50 dark:peer-checked:from-emerald-950/30 dark:peer-checked:to-teal-950/20 peer-checked:shadow-lg peer-checked:shadow-emerald-500/20 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-md">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <div class="w-12 h-12 bg-teal-100 dark:bg-teal-900/50 rounded-xl flex items-center justify-center peer-checked:bg-teal-500 transition-colors">
-                                        <svg class="w-6 h-6 text-teal-600 dark:text-teal-400 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center peer-checked:bg-gradient-to-br peer-checked:from-emerald-500 peer-checked:to-teal-600 transition-all shadow-md peer-checked:shadow-emerald-500/50">
+                                        <svg class="w-7 h-7 text-emerald-600 dark:text-emerald-400 peer-checked:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
                                     </div>
@@ -172,11 +183,14 @@ $isFound = $itemType === 'found';
                 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                        Foto Barang <span id="image-required-star" class="text-rose-500 <?= $isFound ? '*' : 'hidden' ?>">*</span>
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Foto Barang <span id="image-required-star" class="text-rose-500 <?= $isFound ? '' : 'hidden' ?>" >*</span>
+                        </span>
                     </label>
                     <div 
                         id="dropzone" 
-                        class="relative border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-primary-500 dark:hover:border-primary-500 transition-all cursor-pointer bg-slate-50 dark:bg-slate-900/50"
+                        class="relative border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 md:p-12 text-center hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950/20 transition-all cursor-pointer bg-slate-50 dark:bg-slate-900/50 group"
                     >
                         <input 
                             type="file" 
@@ -188,13 +202,15 @@ $isFound = $itemType === 'found';
                             <?= $isFound ? 'required' : '' ?>
                         >
                         <div id="upload-placeholder">
-                            <svg class="w-12 h-12 mx-auto mb-4 text-slate-400 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <p class="text-slate-600 dark:text-slate-400 mb-2">
-                                <span class="font-semibold text-primary-600 dark:text-primary-400">Klik untuk upload</span> atau drag & drop
+                            <div class="w-16 h-16 mx-auto mb-4 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/30 transition-colors">
+                                <svg class="w-8 h-8 text-slate-400 dark:text-slate-600 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 mb-2 font-medium">
+                                <span class="font-bold text-primary-600 dark:text-primary-400">Klik untuk upload</span> atau drag & drop
                             </p>
-                            <p class="text-sm text-slate-500 dark:text-slate-500">PNG, JPG, JPEG (Max 2MB)</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">PNG, JPG, JPEG (Max 2MB)</p>
                         </div>
                         <div id="image-preview" class="hidden">
                             <img id="preview-img" src="" alt="Preview" class="max-h-64 mx-auto rounded-lg shadow-lg">
@@ -228,7 +244,7 @@ $isFound = $itemType === 'found';
                 </div>
 
                 
-                <div class="bg-gradient-to-br from-primary-50 to-sky-50 dark:from-primary-950/20 dark:to-sky-950/20 rounded-xl p-6 border border-primary-200 dark:border-primary-800/30">
+                <div class="glass-card bg-gradient-to-br from-primary-50 to-cyan-50 dark:from-primary-950/30 dark:to-cyan-950/20 rounded-xl p-6 border-2 border-primary-200 dark:border-primary-800/50 shadow-lg">
                     <div class="flex items-start gap-3 mb-4">
                         <input 
                             type="checkbox" 
@@ -236,14 +252,15 @@ $isFound = $itemType === 'found';
                             name="is_safe_claim" 
                             value="1"
                             onchange="toggleSafeClaim()"
-                            class="w-5 h-5 mt-0.5 text-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                            class="w-5 h-5 mt-1 text-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer transition-all"
                             <?= isset($_POST['is_safe_claim']) ? 'checked' : '' ?>
                         >
                         <div class="flex-1">
-                            <label for="is_safe_claim" class="font-semibold text-slate-900 dark:text-white cursor-pointer">
-                                🔒 Aktifkan Fitur Safe Claim
+                            <label for="is_safe_claim" class="font-bold text-lg text-slate-900 dark:text-white cursor-pointer flex items-center gap-2">
+                                <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Aktifkan Fitur Safe Claim
                             </label>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
                                 Lindungi barang Anda dengan pertanyaan keamanan. Hanya yang bisa menjawab dengan benar yang dapat mengklaim barang ini.
                             </p>
                         </div>
@@ -285,19 +302,19 @@ $isFound = $itemType === 'found';
                 </div>
 
                 
-                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-200 dark:border-slate-700 mt-6">
                     <button 
                         type="submit"
-                        class="flex-1 px-6 py-3.5 gradient-primary text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                        class="flex-1 px-6 py-4 gradient-primary text-white rounded-xl font-bold text-base shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        Buat Laporan
+                        Buat Laporan Sekarang
                     </button>
                     <a 
                         href="<?= base_url('index.php?page=items') ?>"
-                        class="flex-1 px-6 py-3.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all text-center"
+                        class="flex-1 px-6 py-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all text-center border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 active:scale-95"
                     >
                         Batal
                     </a>
