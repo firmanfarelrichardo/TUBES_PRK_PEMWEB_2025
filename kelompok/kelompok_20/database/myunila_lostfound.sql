@@ -1,3 +1,5 @@
+-- Active: 1746180735798@@127.0.0.1@3306@mysql
+-- Active: 1746180735798@@127.0.0.1@3306@myunila_lostfound
 DROP DATABASE IF EXISTS myunila_lostfound;
 CREATE DATABASE myunila_lostfound;
 USE myunila_lostfound;
@@ -144,6 +146,91 @@ INSERT INTO locations (id, name) VALUES
 (19, 'Asrama Mahasiswa'),
 (20, 'Lainnya');
 
+CREATE TABLE password_resets (
+    email VARCHAR(100) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL,
+    PRIMARY KEY (token)
+);
+
+ALTER TABLE locations ADD COLUMN latitude DECIMAL(10,8) NULL;
+ALTER TABLE locations ADD COLUMN longitude DECIMAL(11,8) NULL;
+ALTER TABLE locations ADD COLUMN location_type VARCHAR(20) DEFAULT 'building';
+
+UPDATE locations SET 
+    latitude = CASE id
+        WHEN 1 THEN -5.3635
+        WHEN 2 THEN -5.3632
+        WHEN 3 THEN -5.3640
+        WHEN 4 THEN -5.3625
+        WHEN 5 THEN -5.3650
+        WHEN 6 THEN -5.3615
+        WHEN 7 THEN -5.3620
+        WHEN 8 THEN -5.3630
+        WHEN 9 THEN -5.3645
+        WHEN 10 THEN -5.3655
+        WHEN 11 THEN -5.3660
+        WHEN 12 THEN -5.3665
+        WHEN 13 THEN -5.3628
+        WHEN 14 THEN -5.3610
+        WHEN 15 THEN -5.3605
+        WHEN 16 THEN -5.3600
+        WHEN 17 THEN -5.3648
+        WHEN 18 THEN -5.3638
+        WHEN 19 THEN -5.3670
+        WHEN 20 THEN -5.3620
+        ELSE latitude
+    END
+WHERE id BETWEEN 1 AND 20;
+
+UPDATE locations SET 
+    longitude = CASE id
+        WHEN 1 THEN 105.2442
+        WHEN 2 THEN 105.2438
+        WHEN 3 THEN 105.2450
+        WHEN 4 THEN 105.2425
+        WHEN 5 THEN 105.2460
+        WHEN 6 THEN 105.2470
+        WHEN 7 THEN 105.2480
+        WHEN 8 THEN 105.2490
+        WHEN 9 THEN 105.2500
+        WHEN 10 THEN 105.2510
+        WHEN 11 THEN 105.2520
+        WHEN 12 THEN 105.2530
+        WHEN 13 THEN 105.2415
+        WHEN 14 THEN 105.2400
+        WHEN 15 THEN 105.2395
+        WHEN 16 THEN 105.2390
+        WHEN 17 THEN 105.2475
+        WHEN 18 THEN 105.2465
+        WHEN 19 THEN 105.2540
+        WHEN 20 THEN 105.2440
+        ELSE longitude
+    END
+WHERE id BETWEEN 1 AND 20;
+
+UPDATE locations SET 
+    location_type = CASE 
+        WHEN id IN (1,2,5,6,7,8,9,10,11,12) THEN 'building'
+        WHEN id = 3 THEN 'library'
+        WHEN id = 4 THEN 'canteen'
+        WHEN id = 13 THEN 'worship'
+        WHEN id = 14 THEN 'sport'
+        WHEN id IN (15,16) THEN 'parking'
+        WHEN id IN (17,18) THEN 'office'
+        WHEN id = 19 THEN 'dormitory'
+        ELSE 'other'
+    END
+WHERE id BETWEEN 1 AND 20;
+
+CREATE INDEX idx_locations_coords ON locations(latitude, longitude);
+
+SELECT 'SUCCESS' as status;
+SELECT * FROM locations WHERE latitude IS NOT NULL LIMIT 5;
+
+-- Akun Administrator Default
+-- Password: password123 (hash bcrypt standar)
+-- Identity Number menggunakan format umum 'ADMIN001'
 INSERT INTO users (id, name, identity_number, email, password, phone, role, is_active) VALUES
 (1, 'Administrator', 'ADMIN001', 'admin@unila.ac.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '081234567890', 'admin', 1),
 (2, 'Budi Santoso', '1817051001', 'budi@students.unila.ac.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '08987654321', 'user', 1),

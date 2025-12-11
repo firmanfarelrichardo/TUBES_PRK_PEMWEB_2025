@@ -78,10 +78,12 @@ $current_page = $_GET['page'] ?? 'home';
                     Beranda
                 </a>
                 
+                <?php $active_lost = is_active('items', ['type' => 'lost']); ?>
                 <a href="<?= base_url('index.php?page=items&type=lost') ?>" class="px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium text-sm <?= $active_lost ? $active_lost : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                     Barang Hilang
                 </a>
                 
+                <?php $active_found = is_active('items', ['type' => 'found']); ?>
                 <a href="<?= base_url('index.php?page=items&type=found') ?>" class="px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium text-sm <?= $active_found ? $active_found : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                     Barang Temuan
                 </a>
@@ -115,6 +117,7 @@ $current_page = $_GET['page'] ?? 'home';
                     $active_admin = is_active('admin');
                     ?>
                     
+                    <?php $active_notif = is_active('notifications'); ?>
                     <a href="<?= base_url('index.php?page=notifications') ?>" class="relative p-2 ml-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all <?= $active_notif ? 'text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -138,12 +141,14 @@ $current_page = $_GET['page'] ?? 'home';
                         </button>
                         
                         <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 hidden group-hover:block">
+                            <?php $active_profile = is_active('profile'); ?>
                             <a href="<?= base_url('index.php?page=profile') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_profile ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                 <svg class="w-5 h-5 <?= $active_profile ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 Profil Saya
                             </a>
+                            <?php $active_my_items = is_active('items', ['action' => 'my']); ?>
                             <a href="<?= base_url('index.php?page=items&action=my') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_my_items ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                 <svg class="w-5 h-5 <?= $active_my_items ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -151,6 +156,7 @@ $current_page = $_GET['page'] ?? 'home';
                                 Laporan Saya
                             </a>
                             <?php if (isAdmin()): ?>
+                                <?php $active_admin = is_active('admin'); ?>
                                 <a href="<?= base_url('index.php?page=admin') ?>" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition <?= $active_admin ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-700 dark:text-slate-200' ?>">
                                     <svg class="w-5 h-5 <?= $active_admin ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -168,7 +174,8 @@ $current_page = $_GET['page'] ?? 'home';
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="<?= base_url('index.php?page=auth&action=login') ?>" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition font-medium text-sm ml-2">
+                    <?php $active_login = is_active('auth', ['action' => 'login']); ?>
+                    <a href="<?= base_url('index.php?page=auth&action=login') ?>" class="px-4 py-2 transition font-medium text-sm ml-2 <?= $active_login ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400' ?>">
                         Login
                     </a>
                     <a href="<?= base_url('index.php?page=auth&action=register') ?>" class="px-5 py-2.5 gradient-primary text-white rounded-xl hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all font-semibold text-sm">
@@ -231,7 +238,10 @@ $current_page = $_GET['page'] ?? 'home';
                     <a href="<?= base_url('index.php?page=auth&action=logout') ?>" class="px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition font-medium">Logout</a>
                 <?php else: ?>
                     <hr class="my-2 border-slate-200 dark:border-slate-700">
-                    <a href="<?= base_url('index.php?page=auth&action=login') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium">Login</a>
+                    
+                    <?php $active_login_mobile = is_active('auth', ['action' => 'login']); ?>
+                    <a href="<?= base_url('index.php?page=auth&action=login') ?>" class="px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium<?= $active_login_mobile ? ' text-primary-600 dark:text-primary-400 font-bold bg-slate-100 dark:bg-slate-800' : '' ?>">Login</a>
+                    
                     <a href="<?= base_url('index.php?page=auth&action=register') ?>" class="px-4 py-2.5 gradient-primary text-white rounded-xl text-center font-semibold">Daftar</a>
                 <?php endif; ?>
             </div>
