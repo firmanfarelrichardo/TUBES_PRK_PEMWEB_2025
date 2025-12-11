@@ -74,23 +74,109 @@ final class User
         return $this->findByIdentityNumber($identityNumber) !== false;
     }
 
+    // --- START: FUNGSI RESET PASSWORD YANG STABIL ---
+
+    public function saveResetToken(string $email, string $token): bool
+    {
+        try {
+            // Hapus token lama untuk email yang sama
+            $this->db->prepare("DELETE FROM password_resets WHERE email = :email")
+                     ->execute([':email' => $email]);
+
+            $sql = "INSERT INTO password_resets (email, token, created_at) VALUES (:email, :token, NOW())";
+            $stmt = $this->db->prepare($sql);
+
+            return $stmt->execute([
+                ':email' => $email,
+                ':token' => $token,
+            ]);
+        } catch (PDOException $e) {
+            error_log('DB Error saveResetToken: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function findValidResetToken(string $email, string $token): array|false
+    {
+        try {
+            // Cek apakah token cocok DAN dibuat kurang dari 1 jam yang lalu
+            $sql = "SELECT * FROM password_resets 
+                    WHERE email = :email 
+                    AND token = :token 
+                    AND created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR) 
+                    LIMIT 1";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':email' => $email,
+                ':token' => $token
+            ]);
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log('DB Error findValidResetToken: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updatePassword(string $email, string $hashedPassword): bool
+    {
+        try {
+            $sql = "UPDATE users SET password = :password, updated_at = NOW() WHERE email = :email";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                ':password' => $hashedPassword,
+                ':email' => $email
+            ]);
+        } catch (PDOException $e) {
+            error_log('DB Error updatePassword: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteResetToken(string $token): bool
+    {
+        try {
+            $sql = "DELETE FROM password_resets WHERE token = :token";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([':token' => $token]);
+        } catch (PDOException $e) {
+            error_log('DB Error deleteResetToken: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // --- END: FUNGSI RESET PASSWORD YANG STABIL ---
+
     
     public function getAll(int $limit = 20, int $offset = 0): array
     {
-        $sql = "SELECT 
-                    id, name, npm, email, phone, avatar, role, is_active, 
-                    created_at, updated_at, deleted_at
-                FROM users
-                WHERE deleted_at IS NULL
-                ORDER BY created_at DESC
-                LIMIT :limit OFFSET :offset";
+        // Use SELECT * to avoid referencing column names that may differ between DBs.
+        // Normalize the returned rows so the caller always has an `npm` field.
+        $limit = max(0, (int) $limit);
+        $offset = max(0, (int) $offset);
+
+        $sql = "SELECT * FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT " . $limit . " OFFSET " . $offset;
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Normalize: ensure 'npm' key exists (map from common column names)
+        foreach ($rows as &$row) {
+            if (!isset($row['npm'])) {
+                if (isset($row['identity_number'])) {
+                    $row['npm'] = $row['identity_number'];
+                } elseif (isset($row['identitynumber'])) {
+                    $row['npm'] = $row['identitynumber'];
+                } else {
+                    $row['npm'] = '';
+                }
+            }
+        }
+
+        return $rows;
     }
 
     
@@ -102,7 +188,6 @@ final class User
         return (int) $stmt->fetchColumn();
     }
 
-    
     public function update(int $id, array $data): bool
     {
         $fields = [];
@@ -147,5 +232,13 @@ final class User
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function setActive(int $id, int $isActive): bool
+    {
+        $sql = "UPDATE users SET is_active = :is_active, updated_at = NOW() WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([':is_active' => $isActive, ':id' => $id]);
     }
 }

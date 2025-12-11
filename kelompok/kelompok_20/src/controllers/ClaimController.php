@@ -97,7 +97,8 @@ final class ClaimController
             (int) $item['user_id'],
             'Klaim Baru',
             $_SESSION['user']['name'] . ' mengajukan klaim untuk barang Anda: "' . $item['title'] . '"',
-            'index.php?page=items&action=show&id=' . $itemId . '#claims'
+            'index.php?page=items&action=show&id=' . $itemId . '#claims',
+            'new_claim'
         );
 
         flash('message', 'Klaim berhasil diajukan! Pemilik item akan menghubungi Anda.', 'success');
@@ -162,7 +163,8 @@ final class ClaimController
             (int) $claim['user_id'],
             'Klaim Diverifikasi! 🎉',
             'Klaim Anda untuk "' . $item['title'] . '" telah diverifikasi! Silakan hubungi pemilik untuk pengambilan.',
-            'index.php?page=items&action=show&id=' . $item['id']
+            'index.php?page=items&action=show&id=' . $item['id'],
+            'claim_accepted'
         );
 
         flash('message', 'Klaim berhasil diverifikasi! Item telah ditandai sebagai selesai.', 'success');
@@ -228,7 +230,8 @@ final class ClaimController
             (int) $claim['user_id'],
             'Klaim Ditolak',
             'Klaim Anda untuk "' . $item['title'] . '" tidak diterima.' . (!empty($notes) ? ' Alasan: ' . $notes : ''),
-            'index.php?page=items&action=show&id=' . $item['id']
+            'index.php?page=items&action=show&id=' . $item['id'],
+            'claim_rejected'
         );
 
         flash('message', 'Klaim berhasil ditolak.', 'success');

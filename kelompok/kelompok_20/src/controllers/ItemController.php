@@ -231,6 +231,17 @@ final class ItemController
             return;
         }
 
+        // Buat notifikasi laporan baru
+        require_once __DIR__ . '/../models/Notification.php';
+        $notifModel = new Notification();
+        $notifModel->create(
+            $_SESSION['user_id'],
+            'Laporan Dibuat',
+            'Laporan Anda "' . $title . '" berhasil dibuat.',
+            'index.php?page=items&action=show&id=' . $itemId,
+            'item_created'
+        );
+
         flash('message', 'Laporan berhasil dibuat!', 'success');
         redirect('index.php?page=items&action=show&id=' . $itemId);
     }
