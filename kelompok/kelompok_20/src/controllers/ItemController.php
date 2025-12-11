@@ -240,7 +240,8 @@ final class ItemController
             $_SESSION['user_id'],
             '✅ Laporan Berhasil Dipublikasikan',
             "Laporan {$typeLabel} \"{$title}\" telah berhasil dipublikasikan dan dapat dilihat oleh pengguna lain.",
-            "index.php?page=items&action=show&id={$itemId}"
+            "index.php?page=items&action=show&id={$itemId}",
+            'item_created'
         );
 
         // Notifikasi 2: Cek item matching dan beri notifikasi ke pemilik item yang cocok
@@ -502,11 +503,14 @@ final class ItemController
      */
     private function notifyMatchingItems(int $newItemId, string $type, string $title, int $categoryId, int $locationId): void
     {
-        // Cari item dengan tipe berlawanan
-        $oppositeType = $type === 'lost' ? 'found' : 'lost';
+        // Ambil data item yang baru dibuat
+        $newItem = $this->itemModel->getById($newItemId);
+        if (!$newItem) {
+            return;
+        }
         
-        // Cari item yang cocok berdasarkan kategori dan lokasi
-        $matches = $this->itemModel->findMatches($newItemId, $oppositeType, $categoryId, $locationId, 5);
+        // Cari item yang cocok menggunakan findMatches
+        $matches = $this->itemModel->findMatches($newItem, 5);
         
         if (empty($matches)) {
             return;
@@ -529,7 +533,8 @@ final class ItemController
                 $matchOwnerId,
                 '🔍 Ada Barang yang Cocok!',
                 "Laporan {$typeLabel} baru \"{$title}\" mungkin cocok dengan laporan {$oppositeLabel} Anda. Cek sekarang!",
-                "index.php?page=items&action=show&id={$newItemId}"
+                "index.php?page=items&action=show&id={$newItemId}",
+                'item_match'
             );
             
             $notifiedUsers[] = $matchOwnerId;

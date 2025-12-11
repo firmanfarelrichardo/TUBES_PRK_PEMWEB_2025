@@ -84,7 +84,8 @@ final class CommentController
                 (int) $item['user_id'],
                 '💬 Komentar Baru di Laporan Anda',
                 "{$commenterName} mengomentari laporan \"{$item['title']}\". Lihat komentar sekarang!",
-                'index.php?page=items&action=show&id=' . $itemId . '#comments'
+                'index.php?page=items&action=show&id=' . $itemId . '#comments',
+                'item_comment'
             );
         }
 
