@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="Sistem Manajemen Kehilangan dan Penemuan Barang Universitas Lampung">
-    <title><?= $pageTitle ?? 'myUnila Lost & Found' ?></title>
+    <title><?php echo $pageTitle ?? 'myUnila Lost & Found'; ?></title>
     
-    
-    <link rel="icon" type="image/svg+xml" href="<?= base_url('favicon.svg') ?>">
-    <link rel="icon" type="image/png" href="<?= base_url('assets/images/iconlost&found.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/iconlost&found.png') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?php echo base_url('favicon.svg'); ?>">
+    <link rel="icon" type="image/png" href="<?php echo base_url('assets/images/iconlost&found.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo base_url('assets/images/iconlost&found.png'); ?>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- ✅ LEAFLET CSS (TAMBAHKAN DI SINI) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- ✅ SELESAI -->
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -84,6 +88,25 @@
         .dark .gradient-mesh { background: radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.2) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%); }
         .bento-shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.05); }
         .dark .bento-shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3); }
+        
+        /* ✅ STYLE UNTUK PETA LEAFLET */
+        .leaflet-container {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .dark .leaflet-tile {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+        }
+        .dark .leaflet-control-attribution {
+            background: rgba(30, 41, 59, 0.8);
+            color: #cbd5e1;
+        }
+        .dark .leaflet-popup-content-wrapper {
+            background-color: #1e293b;
+            color: #f1f5f9;
+        }
+        .dark .leaflet-popup-tip {
+            background-color: #1e293b;
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col antialiased transition-colors duration-300">
@@ -92,10 +115,9 @@
     
     <?php if ($flash = flash('message')): ?>
         <div class="container mx-auto px-4 mt-6">
-            <div class="<?= $flash['type'] === 'success' 
+            <div class="<?php echo ($flash['type'] === 'success' 
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 border-l-4 border-emerald-500 text-emerald-800 dark:text-emerald-200' 
-                : 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-800 dark:text-red-200' 
-            ?> p-4 rounded-xl flex items-start justify-between" role="alert">
+                : 'bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-800 dark:text-red-200'); ?> p-4 rounded-xl flex items-start justify-between" role="alert">
                 <div class="flex items-center gap-3">
                     <?php if ($flash['type'] === 'success'): ?>
                         <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -106,7 +128,7 @@
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                         </svg>
                     <?php endif; ?>
-                    <span class="font-medium"><?= $flash['message'] ?></span>
+                    <span class="font-medium"><?php echo $flash['message']; ?></span>
                 </div>
                 <button onclick="this.parentElement.remove()" class="text-current opacity-70 hover:opacity-100 transition">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -118,7 +140,7 @@
     <?php endif; ?>
     
     <main class="flex-grow">
-        <?= $content ?? '' ?>
+        <?php echo $content ?? ''; ?>
     </main>
     
     <footer class="bg-white dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700/50 mt-auto">
@@ -126,7 +148,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
-                        <img src="<?= base_url('assets/images/iconlost&found.png') ?>" alt="Logo" class="w-12 h-12 rounded-xl shadow-lg">
+                        <img src="<?php echo base_url('assets/images/iconlost&found.png'); ?>" alt="Logo" class="w-12 h-12 rounded-xl shadow-lg">
                         <div>
                             <h3 class="font-bold text-lg text-slate-900 dark:text-white">myUnila Lost & Found</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Universitas Lampung</p>
@@ -140,9 +162,9 @@
                 <div>
                     <h4 class="font-semibold text-slate-900 dark:text-white mb-4">Menu</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="<?= base_url('index.php') ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Beranda</a></li>
-                        <li><a href="<?= base_url('index.php?page=items&type=lost') ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Barang Hilang</a></li>
-                        <li><a href="<?= base_url('index.php?page=items&type=found') ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Barang Temuan</a></li>
+                        <li><a href="<?php echo base_url('index.php'); ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Beranda</a></li>
+                        <li><a href="<?php echo base_url('index.php?page=items&type=lost'); ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Barang Hilang</a></li>
+                        <li><a href="<?php echo base_url('index.php?page=items&type=found'); ?>" class="text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Barang Temuan</a></li>
                     </ul>
                 </div>
                 
@@ -162,10 +184,13 @@
             </div>
             
             <div class="border-t border-slate-200 dark:border-slate-700/50 mt-8 pt-8 text-center">
-                <p class="text-sm text-slate-500 dark:text-slate-400">&copy; <?= date('Y') ?> myUnila Lost & Found — Kelompok 20. All rights reserved.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">&copy; <?php echo date('Y'); ?> myUnila Lost & Found — Kelompok 20. All rights reserved.</p>
             </div>
         </div>
     </footer>
+    
+    <!-- ✅ JAVASCRIPT UNTUK PETA (DIPINDAHKAN KE BAGIAN INI) -->
+    <script src="<?php echo base_url('src/assets/js/map.js') . '?v=' . time(); ?>"></script>
     
     <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl gradient-primary text-white shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center group">
         <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,16 +218,41 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateIcon();
+            
+            // ✅ Panggil fungsi untuk memperbarui peta saat tema berubah
+            if (typeof window.forceMapInvalidate === 'function') {
+                setTimeout(() => {
+                    window.forceMapInvalidate();
+                }, 300);
+            }
         });
         
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('[role="alert"]');
-            alerts.forEach(alert => {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
+        // ✅ Fix untuk peta: Panggil setelah halaman selesai load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (typeof window.forceMapInvalidate === 'function') {
+                    window.forceMapInvalidate();
+                }
+            }, 1000);
+            
+            // ✅ Fix ukuran peta saat halaman selesai loading
+            window.addEventListener('load', function() {
+                if (typeof window.forceMapInvalidate === 'function') {
+                    setTimeout(() => {
+                        window.forceMapInvalidate();
+                    }, 500);
+                }
             });
-        }, 5000);
+        });
+        
+        // ✅ Fix ukuran peta saat window di-resize
+        window.addEventListener('resize', function() {
+            if (typeof window.forceMapInvalidate === 'function') {
+                setTimeout(() => {
+                    window.forceMapInvalidate();
+                }, 200);
+            }
+        });
     </script>
 </body>
 </html>
