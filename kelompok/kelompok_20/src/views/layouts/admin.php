@@ -13,6 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
     <script>
       tailwind.config = {
@@ -48,7 +49,7 @@
       >
         <div class="p-6 flex items-center border-b border-gray-700">
           <img
-            src="iconlost&found.jpg"
+            src="assets\images\iconlost&found.png" 
             alt="Logo myUnila"
             class="w-10 h-10 rounded-full object-cover border-2 border-cyan-500 mr-3"
           />
@@ -63,8 +64,8 @@
 
         <nav class="mt-6 flex-1 px-2 space-y-2">
           <a
-            href="#"
-            onclick="showSection('dashboard')"
+            href="<?= base_url('index.php?page=admin&action=dashboard') ?>"
+            data-ajax="1"
             id="nav-dashboard"
             class="active-nav group flex items-center px-4 py-3 text-sm font-medium rounded-r-md hover:bg-gray-800 hover:text-cyan-400 transition"
           >
@@ -73,8 +74,8 @@
           </a>
 
           <a
-            href="#"
-            onclick="showSection('items')"
+            href="<?= base_url('index.php?page=admin&action=items') ?>"
+            data-ajax="1"
             id="nav-items"
             class="group flex items-center px-4 py-3 text-sm font-medium rounded-r-md hover:bg-gray-800 hover:text-cyan-400 transition"
           >
@@ -83,8 +84,8 @@
           </a>
 
           <a
-            href="#"
-            onclick="showSection('users')"
+            href="<?= base_url('index.php?page=admin&action=users') ?>"
+            data-ajax="1"
             id="nav-users"
             class="group flex items-center px-4 py-3 text-sm font-medium rounded-r-md hover:bg-gray-800 hover:text-cyan-400 transition"
           >
@@ -92,21 +93,19 @@
             Data User
           </a>
 
-          <a
-            href="#"
-            onclick="showSection('master')"
-            id="nav-master"
-            class="group flex items-center px-4 py-3 text-sm font-medium rounded-r-md hover:bg-gray-800 hover:text-cyan-400 transition"
-          >
-            <i class="fa-solid fa-database mr-3 text-lg"></i>
-            Master Data
-          </a>
         </nav>
 
-        <div class="p-4 border-t border-gray-700 bg-slate-900">
+        <div class="p-4 border-t border-gray-700 bg-slate-900 space-y-2">
           <a
-            href="#"
-            class="flex items-center text-sm font-medium text-gray-400 hover:text-red-400 transition"
+            href="<?= base_url('index.php?page=home') ?>"
+            class="flex items-center text-sm font-medium text-gray-400 hover:text-cyan-400 transition px-4 py-2 rounded-md hover:bg-gray-800"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket mr-3"></i>
+            Ke Mode User
+          </a>
+          <a
+            href="<?= base_url('index.php?page=auth&action=logout') ?>"
+            class="flex items-center text-sm font-medium text-gray-400 hover:text-red-400 transition px-4 py-2 rounded-md hover:bg-gray-800"
           >
             <i class="fa-solid fa-right-from-bracket mr-3"></i>
             Logout
@@ -158,5 +157,130 @@
     </div>
 
     <script src="/assets/js/main.js"></script>
+    <script>
+    // Admin sidebar: intercept clicks on links with data-ajax to load fragment content
+    (function(){
+      const mainEl = document.querySelector('main');
+      const navLinks = document.querySelectorAll('aside nav a[data-ajax]');
+
+      function setActive(id) {
+        navLinks.forEach(a => a.classList.remove('active-nav'));
+        const el = document.getElementById(id);
+        if (el) el.classList.add('active-nav');
+      }
+
+      async function loadFragment(url, push = true) {
+        try {
+          const fetchUrl = url + (url.includes('?') ? '&' : '?') + 'ajax=1';
+          const res = await fetch(fetchUrl, { credentials: 'same-origin' });
+          if (!res.ok) throw new Error('Network response was not ok');
+          const html = await res.text();
+          mainEl.innerHTML = html;
+          if (push) history.pushState({ fragment: url }, '', url);
+        } catch (err) {
+          console.error('Failed to load fragment', err);
+          // Fallback: full navigation
+          window.location.href = url;
+        }
+      }
+
+      navLinks.forEach(a => {
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          const url = this.getAttribute('href');
+          loadFragment(url);
+          // update active class
+          const id = this.id;
+          setActive(id);
+          const titleText = this.textContent.trim();
+          const pageTitle = document.getElementById('page-title');
+          if (pageTitle) pageTitle.textContent = titleText;
+        });
+      });
+
+      // handle back/forward
+      window.addEventListener('popstate', function(e){
+        const state = e.state;
+        if (state && state.fragment) {
+          loadFragment(state.fragment, false);
+        } else {
+          // reload full page
+          window.location.reload();
+        }
+      });
+
+      // ADMIN ACTIONS: delegate delete/ban buttons inside main content
+      document.querySelector('main').addEventListener('click', async function(e){
+        const target = e.target.closest('[data-admin-action]');
+        if (!target) return;
+        const action = target.getAttribute('data-admin-action');
+        const id = target.getAttribute('data-id');
+
+        if (!action || !id) return;
+
+        if (!confirm(target.getAttribute('data-confirm') || 'Yakin?')) return;
+
+        try {
+          const form = new FormData();
+          form.append('id', id);
+
+          const url = `<?= base_url('index.php?page=admin&action=') ?>${action}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            body: form,
+            credentials: 'same-origin',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+
+          const json = await res.json();
+          if (json.success) {
+            const row = target.closest('tr');
+
+            if (action === 'toggle_active') {
+              if (row) {
+                const uid = json.user_id;
+                const badge = row.querySelector('#status-badge-' + uid);
+                if (badge) {
+                  const isActive = Number(json.is_active);
+                  if (isActive === 1) {
+                    badge.textContent = 'Active';
+                    badge.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700';
+                  } else {
+                    badge.textContent = 'Inactive';
+                    badge.className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700';
+                  }
+                }
+
+                // update the button label and classes
+                if (target) {
+                  if (Number(json.is_active) === 1) {
+                    target.innerHTML = '<i class="fa-solid fa-ban mr-1"></i> Ban User';
+                    target.className = 'text-amber-600 hover:text-white hover:bg-amber-500 border border-amber-200 px-3 py-1.5 rounded-md transition text-xs font-medium shadow-sm w-24';
+                  } else {
+                    target.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Unban';
+                    target.className = 'text-green-600 hover:text-white hover:bg-green-500 border border-green-200 px-3 py-1.5 rounded-md transition text-xs font-medium shadow-sm w-24';
+                  }
+                }
+              }
+            } else if (action === 'delete_item') {
+              if (row) row.remove();
+            } else if (action === 'delete_user') {
+              // legacy: remove row
+              if (row) row.remove();
+            }
+
+            alert(json.message || 'Berhasil');
+          } else {
+            alert(json.message || 'Gagal melakukan aksi');
+          }
+        } catch (err) {
+          console.error('Admin action error', err);
+          alert('Terjadi kesalahan. Cek console.');
+        }
+      });
+    })();
+    </script>
   </body>
 </html>
