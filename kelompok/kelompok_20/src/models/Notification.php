@@ -52,7 +52,7 @@ final class Notification
     }
 
     
-    public function getAllByUserId(int $userId, int $limit = 20): array
+    public function getAllByUserId(int $userId, int $limit = 20, ?string $typeFilter = null): array
     {
         try {
             $limit = (int) $limit;
@@ -137,5 +137,29 @@ final class Notification
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute(['days' => $daysOld]);
+    }
+
+    public function countByType(int $userId, string $typeFilter): int
+    {
+        try {
+            $sql = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id";
+            
+            if ($typeFilter === 'reports') {
+                $sql .= " AND type IN ('item_created', 'item_comment', 'new_claim', 'item_match')";
+            } elseif ($typeFilter === 'claims') {
+                $sql .= " AND type IN ('claim_verified', 'claim_rejected', 'new_claim')";
+            } elseif ($typeFilter === 'unread') {
+                $sql .= " AND is_read = 0";
+            }
+            // 'all' tidak perlu WHERE tambahan, ambil semua notifikasi user
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['user_id' => $userId]);
+
+            return (int) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log('Notification::countByType error: ' . $e->getMessage());
+            return 0;
+        }
     }
 }
